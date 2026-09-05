@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZEHNOX Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/brand/zehnox-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css?v=3">
+</head>
+<body>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- Sign-in card: shown when no session is stored, or when the API answers 401 -->
+<section class="gate gate--login" id="auth" hidden>
+  <div class="login">
+    <div class="login__brand">
+      <img src="/brand/zehnox-lockup-dark.svg" alt="ZEHNOX" width="176" height="36">
+      <span class="mono">Admin console</span>
+    </div>
+    <form class="login__card" id="authForm" novalidate>
+      <h1>Sign in</h1>
+      <p class="login__lead">Manage content, team, insights and enquiries for zehnox.com.</p>
+      <label class="field"><span>Username</span><input type="text" id="authUser" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label class="field"><span>Password</span>
+        <span class="pw"><input type="password" id="authPass" name="password" autocomplete="current-password" required><button class="pw__toggle" type="button" id="authToggle" aria-label="Show password" aria-pressed="false">Show</button></span>
+      </label>
+      <p class="error" id="authError" role="alert" hidden></p>
+      <button class="btn btn--lime login__submit" type="submit">Sign in</button>
+    </form>
+    <p class="login__foot mono">ZEHNOX — A STRATEGIC Ecosystem brand</p>
+  </div>
+</section>
+
+<!-- Unreachable API -->
+<section class="gate" id="fail" hidden>
+  <div class="card gate__card">
+    <span class="mono lime">ZEHNOX — Admin</span>
+    <h1>Cannot load content</h1>
+    <p class="error" id="failMessage"></p>
+    <p>Start the backend with <code>node server.js</code> from the project root and open <code>/admin/</code> on that port, then try again.</p>
+    <div class="actions"><button class="btn btn--lime" type="button" id="btnRetry">Try again</button><button class="btn btn--ghost" type="button" id="btnFailSignOut">Sign in again</button></div>
+  </div>
+</section>
+
+<!-- Loading -->
+<section class="gate" id="loading" hidden>
+  <div class="card gate__card gate__card--slim"><span class="mono lime">ZEHNOX — Admin</span><p>Loading content…</p></div>
+</section>
+
+<div class="app" id="app" hidden>
+
+  <header class="bar">
+    <div class="bar__brand">
+      <span class="bar__mark" aria-hidden="true">Z</span>
+      <span class="bar__title"><strong>ZEHNOX</strong> Admin</span>
+    </div>
+    <div class="bar__state" id="dirtyState" data-dirty="false">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="dirtyText">All changes saved</span>
+    </div>
+    <div class="bar__actions">
+      <a class="btn btn--ghost" href="/" target="_blank" rel="noopener">Open site</a>
+      <button class="btn btn--ghost" type="button" id="btnRebuild">Rebuild</button>
+      <button class="btn btn--lime" type="button" id="btnSave">Save</button>
+      <button class="btn btn--text" type="button" id="btnSignOut">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="side" id="side" aria-label="Sections">
+    <a href="#site" data-nav="site"><span class="mono">01</span>Site &amp; Contact</a>
+    <a href="#social" data-nav="social"><span class="mono">02</span>Social</a>
+    <a href="#team" data-nav="team"><span class="mono">03</span>Team</a>
+    <a href="#work" data-nav="work"><span class="mono">04</span>Work</a>
+    <a href="#insights" data-nav="insights"><span class="mono">05</span>Insights</a>
+    <a href="#legal" data-nav="legal"><span class="mono">06</span>Legal</a>
+    <a href="#inquiries" data-nav="inquiries"><span class="mono">07</span>Inquiries</a>
+    <a href="#account" data-nav="account"><span class="mono">08</span>Account</a>
+    <div class="side__foot"><span class="mono" id="whoami"></span> <a href="#" id="sideSignOut">Sign out</a></div>
+  </nav>
+
+  <main class="main" id="main">
+
+    <div class="problems" id="problems" hidden>
+      <strong>Fix these before saving</strong>
+      <ul id="problemsList"></ul>
+    </div>
+
+    <!-- 01 Site & Contact -->
+    <section class="panel" data-panel="site" hidden>
+      <div class="panel__head"><span class="mono lime">01</span><h2>Site &amp; Contact</h2><p>Values used across every page: the header, footer, contact page, and WhatsApp links.</p></div>
+
+      <div class="card">
+        <h3>Site</h3>
+        <div class="grid">
+          <label class="field"><span>Site URL</span><input type="url" data-path="site.url" placeholder="https://zehnox.com" inputmode="url"><small>Used for the sitemap and canonical links.</small></label>
+          <label class="field"><span>Contact form endpoint <em>optional</em></span><input type="url" data-path="site.contactEndpoint" placeholder="https://…" inputmode="url"><small>External form service the site posts enquiries to. Leave empty to store enquiries in this admin.</small></label>
+          <label class="field"><span>Inquiry webhook <em>optional</em></span><input type="url" data-path="site.inquiryWebhook" placeholder="https://…" inputmode="url"><small>The server forwards each stored enquiry here (Slack, Zapier, Make, e-mail relay).</small></label>
+        </div>
+        <div class="grid grid--locked">
+          <label class="field"><span>Name <em>fixed</em></span><input type="text" data-path="site.name" readonly></label>
+          <label class="field"><span>Slogan <em>fixed</em></span><input type="text" data-path="site.slogan" readonly></label>
+          <label class="field"><span>Ecosystem line <em>fixed</em></span><input type="text" data-path="site.ecosystemLine" readonly></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Contact</h3>
+        <div class="grid">
+          <label class="field"><span>WhatsApp number (digits only)</span><input type="text" data-path="contact.whatsapp" inputmode="numeric" placeholder="923435441132"><small>Country code first, no plus or spaces. Powers every WhatsApp link.</small></label>
+          <label class="field"><span>WhatsApp display</span><input type="text" data-path="contact.whatsappDisplay" placeholder="+92 343 5441132"></label>
+          <label class="field"><span>Email</span><input type="email" data-path="contact.email" inputmode="email" placeholder="Shown as a dashed placeholder until filled"></label>
+          <label class="field"><span>Phone</span><input type="tel" data-path="contact.phone" inputmode="tel" placeholder="Shown as a dashed placeholder until filled"></label>
+          <label class="field field--wide"><span>Office address</span><input type="text" data-path="contact.office" placeholder="Mirpur, AJK"></label>
+          <label class="field field--wide"><span>Map embed URL <em>optional</em></span><input type="url" data-path="contact.mapEmbed" inputmode="url" placeholder="https://www.google.com/maps/embed?…"><small>The iframe <code>src</code> from Google Maps “Share → Embed a map”.</small></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Social -->
+    <section class="panel" data-panel="social" hidden>
+      <div class="panel__head"><span class="mono lime">02</span><h2>Social</h2><p>Full profile URLs. An empty field renders as a dashed placeholder in the footer, never as a broken link.</p></div>
+      <div class="card">
+        <div class="grid">
+          <label class="field"><span>Instagram</span><input type="url" data-path="social.instagram" inputmode="url" placeholder="https://instagram.com/…"></label>
+          <label class="field"><span>LinkedIn</span><input type="url" data-path="social.linkedin" inputmode="url" placeholder="https://linkedin.com/company/…"></label>
+          <label class="field"><span>YouTube</span><input type="url" data-path="social.youtube" inputmode="url" placeholder="https://youtube.com/@…"></label>
+          <label class="field"><span>Facebook</span><input type="url" data-path="social.facebook" inputmode="url" placeholder="https://facebook.com/…"></label>
+          <label class="field"><span>TikTok</span><input type="url" data-path="social.tiktok" inputmode="url" placeholder="https://tiktok.com/@…"></label>
+          <label class="field"><span>X</span><input type="url" data-path="social.x" inputmode="url" placeholder="https://x.com/…"></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Team -->
+    <section class="panel" data-panel="team" hidden>
+      <div class="panel__head"><span class="mono lime">03</span><h2>Team</h2><p>Order here is the order on the site. A member with an empty name is a placeholder slot and renders as a dashed “to be announced” card.</p></div>
+      <div class="list" id="teamList"></div>
+      <div class="actions"><button class="btn btn--outline" type="button" data-add="team">Add team member</button></div>
+    </section>
+
+    <!-- 04 Work -->
+    <section class="panel" data-panel="work" hidden>
+      <div class="panel__head"><span class="mono lime">04</span><h2>Work</h2><p>Projects listed on the Work page and filtered by vertical. Only publish work you are allowed to name.</p></div>
+      <div class="list" id="workList"></div>
+      <div class="actions"><button class="btn btn--outline" type="button" data-add="work">Add project</button></div>
+    </section>
+
+    <!-- 05 Insights -->
+    <section class="panel" data-panel="insights" hidden>
+      <div class="panel__head"><span class="mono lime">05</span><h2>Insights</h2><p>Each post becomes <code>insights/&lt;slug&gt;.html</code> when the site is rebuilt. Newest date appears first.</p></div>
+      <div class="list" id="postList"></div>
+      <div class="actions"><button class="btn btn--outline" type="button" data-add="posts">Add insight</button></div>
+    </section>
+
+    <!-- 06 Legal -->
+    <section class="panel" data-panel="legal" hidden>
+      <div class="panel__head"><span class="mono lime">06</span><h2>Legal</h2><p>Reviewed policy text only. While a field is empty the page shows a dashed placeholder instead of invented copy.</p></div>
+      <p class="hint hint--block">Formatting: blank line = new paragraph · <code>## Heading</code> · <code>### Subheading</code> · <code>- bullet</code> · <code>1. numbered</code> · <code>&gt; quote</code> · <code>**bold**</code> · <code>*italic*</code></p>
+      <div class="card">
+        <label class="field"><span>Privacy Policy</span><textarea data-path="legal.privacy" rows="14" spellcheck="true"></textarea></label>
+      </div>
+      <div class="card">
+        <label class="field"><span>Terms of Use</span><textarea data-path="legal.terms" rows="14" spellcheck="true"></textarea></label>
+      </div>
+      <div class="card">
+        <label class="field"><span>Cookie Policy</span><textarea data-path="legal.cookies" rows="14" spellcheck="true"></textarea></label>
+      </div>
+    </section>
+
+    <!-- 07 Inquiries -->
+    <section class="panel" data-panel="inquiries" hidden>
+      <div class="panel__head"><span class="mono lime">07</span><h2>Inquiries</h2><p>Enquiries stored by the contact form, newest first. Deleting is permanent.</p></div>
+      <div class="actions actions--start"><button class="btn btn--outline" type="button" id="btnInquiriesRefresh">Refresh</button><span class="hint" id="inquiriesCount"></span></div>
+      <div id="inquiries"></div>
+    </section>
+
+    <!-- 08 Account -->
+    <section class="panel" data-panel="account" hidden>
+      <div class="panel__head"><span class="mono lime">08</span><h2>Account</h2><p>Change the username and password used to open this admin. Your current password is required for any change. Other signed-in devices are signed out when you save.</p></div>
+      <form class="card" id="accountForm" novalidate autocomplete="off">
+        <div class="grid">
+          <label class="field"><span>Current password</span><input type="password" name="currentPassword" autocomplete="current-password" required></label>
+          <label class="field"><span>New username <em>optional</em></span><input type="text" name="newUsername" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Leave empty to keep the current one"><small>3–40 characters: letters, digits, dots, dashes or underscores.</small></label>
+          <label class="field"><span>New password <em>optional</em></span><input type="password" name="newPassword" autocomplete="new-password" placeholder="At least 8 characters"></label>
+          <label class="field"><span>Confirm new password</span><input type="password" name="confirmPassword" autocomplete="new-password"></label>
+        </div>
+        <p class="error" id="accountError" hidden></p>
+        <div class="actions"><button class="btn btn--lime" type="submit">Update account</button></div>
+      </form>
+      <p class="hint hint--block">Forgot the password? Stop the server, delete <code>data/admin-auth.json</code>, start it again: a new username “admin” with a fresh password is printed in the console and saved in <code>data/initial-password.txt</code>.</p>
+    </section>
+
+  </main>
+</div>
+
+<script src="admin.js?v=3"></script>
+</body>
+</html>

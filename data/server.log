@@ -1,0 +1,10 @@
+
+ZEHNOX site server
+  site   : http://127.0.0.1:3000/
+  admin  : http://127.0.0.1:3000/admin/
+  user   : admin
+  pass   : (set in /admin/ → Account; to reset, delete data/admin-auth.json and restart)
+
+2026-09-03T01:03:03.253Z failed admin sign-in from 127.0.0.1 (9 attempts left)
+2026-09-03T01:03:04.013Z admin sign-in: admin from 127.0.0.1
+2026-09-03T01:07:20.878Z admin sign-in: admin from 127.0.0.1
