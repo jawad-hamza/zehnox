@@ -66,7 +66,7 @@
     const exclude = el.dataset.exclude || "";
     const posts = (C.posts || []).filter((p) => !exclude || p.slug !== exclude).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, limit);
     el.innerHTML = posts.map((p) =>
-      '<a class="row reveal" href="' + ROOT + "insights/" + esc(p.slug) + '.html" data-cursor="Read">' +
+      '<a class="row reveal" href="' + ROOT + "insights/" + esc(p.slug) + '" data-cursor="Read">' +
       '<span class="mono">' + fmtDate(p.date) + "</span><h3>" + esc(p.title) + "</h3>" +
       '<span class="row__tag">' + esc((p.tags || [])[0] || "Insight") + '</span><span class="row__arrow" aria-hidden="true">→</span></a>').join("") ||
       '<p class="placeholder-block"><span class="mono">No insights published yet.</span></p>';
@@ -80,7 +80,7 @@
       /* Every entry stays reachable: the external case study when one is set, the
          work index otherwise, so a row is never a dead end. */
       return w.url ? '<a class="row row--feature reveal" href="' + esc(w.url) + '" target="_blank" rel="noopener" data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>"
-                   : '<a class="row row--feature reveal" href="' + ROOT + 'work.html" data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>";
+                   : '<a class="row row--feature reveal" href="' + ROOT + 'work" data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>";
     }).join("") || '<p class="placeholder-block"><span class="mono">No work published yet.</span></p>';
 
     /* Vertical filters. One entry needs no filter bar, so it stays hidden until
@@ -204,11 +204,15 @@
     e.preventDefault(); closeNav(); scrollTo(t);
   }));
   // Mark the current page in the nav (inner pages); the homepage marks sections itself.
-  const here = location.pathname.replace(/index\.html$/, "");
+  /* Pages are served at extensionless routes (/services), so compare normalised paths: a
+     legacy .html suffix, a trailing slash and /index all mean the same page. A section
+     link stays lit on its children, so /services is active on /services/ai-automation. */
+  const norm = (p) => p.replace(/\.html$/, "").replace(/\/index$/, "/").replace(/(.)\/$/, "$1") || "/";
+  const here = norm(location.pathname);
   document.querySelectorAll(".nav a").forEach((a) => {
     const href = a.getAttribute("href"); if (!href || href.startsWith("#")) return;
-    const path = new URL(href, location.href).pathname;
-    if (path === location.pathname || path.replace(/index\.html$/, "") === here || (path.endsWith(".html") && location.pathname.startsWith(path.replace(/\.html$/, "/")))) a.classList.add("is-active");
+    const path = norm(new URL(href, location.href).pathname);
+    if (path === here || (path !== "/" && here.startsWith(path + "/"))) a.classList.add("is-active");
   });
 
   /* ---------- cursor ---------- */
@@ -353,7 +357,7 @@
   const ZX = window.ZX; if (!ZX) return;
   const { C, ROOT, esc, fmtDate, hasGsap, hasST, reduce } = ZX;
   const sortedPosts = () => (C.posts || []).slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  const postHref = (p) => ROOT + "insights/" + esc(p.slug) + ".html";
+  const postHref = (p) => ROOT + "insights/" + esc(p.slug);
 
   document.querySelectorAll("[data-featured-post]").forEach((el) => {
     const p = sortedPosts()[0];

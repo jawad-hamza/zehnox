@@ -143,7 +143,7 @@ function removeStale(written, log) {
 function postContext(post, content) {
   const slug = slugify(post.slug || post.title);
   const tags = Array.isArray(post.tags) ? post.tags.map((t) => String(t)).filter(Boolean) : [];
-  const url = siteUrl(content) + "/insights/" + slug + ".html";
+  const url = siteUrl(content) + "/insights/" + slug;
   return {
     site: {
       url: siteUrl(content),
@@ -186,7 +186,9 @@ function sitemapXml(pages, content, posts) {
     .filter((p) => p !== "404.html")
     .sort((a, b) => (a === "index.html" ? -1 : b === "index.html" ? 1 : a.localeCompare(b)))
     .map((p) => {
-      const loc = p === "index.html" ? base + "/" : base + "/" + p;
+      // The pages are files on disk (about.html) but the site is served at extensionless
+      // routes (/about), and only one of the two may appear in the sitemap.
+      const loc = p === "index.html" ? base + "/" : base + "/" + p.replace(/\.html$/, "");
       const mod = lastmod.get(p);
       return "  <url><loc>" + esc(loc) + "</loc>" + (mod && /^\d{4}-\d{2}-\d{2}$/.test(mod) ? "<lastmod>" + mod + "</lastmod>" : "") + "</url>";
     });

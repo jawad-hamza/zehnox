@@ -77,12 +77,12 @@
   if (!hasST || reduce) return;
 
   /* Section-aware nav on the homepage: highlight the page link for the section in view */
-  const map = { "#services": "services.html", "#solutions": "solutions.html", "#work": "work.html", "#insights": "insights.html", "#team": "about.html", "#contact": "contact.html" };
+  const map = { "#services": "/services", "#solutions": "/solutions", "#work": "/work", "#insights": "/insights", "#team": "/about", "#contact": "/contact" };
   Object.entries(map).forEach(([id, page]) => {
-    const sec = document.querySelector(id), a = document.querySelector('.nav a[href$="' + page + '"]');
+    const sec = document.querySelector(id), a = document.querySelector('.nav a[href="' + page + '"]');
     if (sec && a) ScrollTrigger.create({ trigger: sec, start: "top 50%", end: "bottom 50%", onToggle: (s) => a.classList.toggle("is-active", s.isActive) });
   });
-  const homeLink = document.querySelector('.nav a[href$="index.html"]');
+  const homeLink = document.querySelector('.nav a[href="/"]');
   if (homeLink) { homeLink.classList.remove("is-active"); ScrollTrigger.create({ trigger: ".hero", start: "top top", end: "bottom 50%", onToggle: (s) => homeLink.classList.toggle("is-active", s.isActive) }); }
 
   /* Capabilities: pinned horizontal scroll with counter */

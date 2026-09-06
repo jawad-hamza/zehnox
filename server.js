@@ -672,6 +672,19 @@ async function handle(req, res) {
     return serveStatic(req, res, ADMIN, p.slice("/admin".length), () => send(res, 404, "Admin file not found", { "Content-Type": "text/plain; charset=utf-8" }));
   }
 
+  /* Pages live on disk as about.html but are served at /about. Both used to answer 200,
+     which is duplicate content as far as a search engine is concerned, so the file form
+     permanently redirects to the route. Only for files that actually exist — anything else
+     must still reach the 404 page. */
+  if (/\.html$/i.test(p) && statFile(resolveStatic(DIST, p))) {
+    let clean = p.replace(/\.html$/i, "");
+    if (clean.endsWith("/index")) clean = clean.slice(0, -"index".length);
+    if (!clean) clean = "/";
+    res.writeHead(301, { Location: clean + url.search, "Cache-Control": "no-cache" });
+    res.end();
+    return;
+  }
+
   return serveStatic(req, res, DIST, p, () => notFoundPage(req, res));
 }
 
