@@ -68,6 +68,18 @@ const waitFor = async (predicate, ms, what) => {
       try { await fetch(base + "/api/me"); break; } catch (_) { await new Promise((r) => setTimeout(r, 100)); }
     }
 
+    await test("the shipped form posts to /api/contact when no endpoint is configured", async () => {
+      // The regression this guards: with the fallback missing, an empty site.contactEndpoint
+      // skipped the POST entirely and went straight to WhatsApp, losing every enquiry.
+      const js = fs.readFileSync(path.join(ROOT, "dist", "js", "site.js"), "utf8");
+      const m = /const endpoint = [^;]+;/.exec(js);
+      assert.ok(m, "could not find the endpoint resolution in dist/js/site.js");
+      assert.ok(m[0].includes('"/api/contact"'), "endpoint must fall back to /api/contact, got: " + m[0]);
+
+      const content = JSON.parse(fs.readFileSync(path.join(ROOT, "content.json"), "utf8"));
+      assert.strictEqual(content.site.contactEndpoint, "", "content.json should leave contactEndpoint empty so the default applies");
+    });
+
     await test("a contact submission is stored and emailed", async () => {
       const inquiry = {
         name: "Bob Example",

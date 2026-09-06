@@ -98,7 +98,7 @@
         <h3>Site</h3>
         <div class="grid">
           <label class="field"><span>Site URL</span><input type="url" data-path="site.url" placeholder="https://zehnox.com" inputmode="url"><small>Used for the sitemap and canonical links.</small></label>
-          <label class="field"><span>Contact form endpoint <em>optional</em></span><input type="url" data-path="site.contactEndpoint" placeholder="https://…" inputmode="url"><small>External form service the site posts enquiries to. Leave empty to store enquiries in this admin.</small></label>
+          <label class="field"><span>Contact form endpoint <em>optional</em></span><input type="url" data-path="site.contactEndpoint" placeholder="https://…" inputmode="url"><small>Leave empty — enquiries then go to this admin and to the forwarding email. Only set this to send them to an outside form service instead.</small></label>
           <label class="field"><span>Forward inquiries to <em>optional</em></span><input type="email" data-path="site.inquiryEmail" placeholder="info@zehnox.com" inputmode="email" autocomplete="off"><small>Every enquiry is emailed here as soon as it arrives. Leave empty to use the contact email below. A copy is always kept in Inquiries.</small></label>
           <label class="field"><span>Inquiry webhook <em>optional</em></span><input type="url" data-path="site.inquiryWebhook" placeholder="https://…" inputmode="url"><small>The server forwards each stored enquiry here (Slack, Zapier, Make, e-mail relay).</small></label>
         </div>

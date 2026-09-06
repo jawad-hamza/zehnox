@@ -262,7 +262,11 @@
       const text = "Hello ZEHNOX, new enquiry from " + location.host + "\n\nName: " + name + "\nEmail: " + email + "\nPhone / WhatsApp: " + phone + "\nCompany: " + (company || "-") + "\nI am a: " + iam + "\nService of interest: " + services.join(", ") + "\nPreferred contact: " + method + "\n\nBrief:\n" + briefV;
       const wa = waLink(text);
       const btn = form.querySelector("[type=submit]"); btn.disabled = true; btn.textContent = "Sending…";
-      const endpoint = (C.site && C.site.contactEndpoint) || form.dataset.endpoint || "";
+      /* Default to this site's own API. Leaving the setting empty used to mean "post
+         nowhere and just open WhatsApp", which silently dropped every enquiry before it
+         reached the admin or the forwarding email. On a static deployment with no server
+         the POST 404s, sent stays false, and the WhatsApp fallback below still runs. */
+      const endpoint = (C.site && C.site.contactEndpoint) || form.dataset.endpoint || "/api/contact";
       let sent = false;
       if (endpoint) {
         try {

@@ -99,15 +99,15 @@ Run `node build.js` and upload the **contents of `dist/`** to any static host (N
 GitHub Pages, S3, cPanel `public_html`, …). Configure the host to serve `404.html` for unknown paths where
 possible. Point the host's custom domain at the URL you set in `site.url` so the sitemap and canonical links match.
 
-With no backend, the contact form still works: if `site.contactEndpoint` is empty (or the request fails) the form
-opens WhatsApp with the message pre-filled (`contact.whatsapp`), so no inquiry is lost.
+With no backend, the contact form still works: the POST to `/api/contact` has nothing to answer it, so the form
+falls back to opening WhatsApp with the message pre-filled (`contact.whatsapp`) and no inquiry is lost.
 
 ### Option B — Node server (site + admin + inquiries)
 
 Copy the whole project (without `data/` — it is created on the target) to a machine with Node, then run
 `node server.js 3000` under a process manager (systemd, pm2, a Windows service, Docker). Put a reverse proxy with
-HTTPS in front of it and sign in to `/admin/` with the printed first-run credentials (then change them under Account). Set `site.contactEndpoint` to `/api/contact`
-in the admin so the form posts to this server.
+HTTPS in front of it and sign in to `/admin/` with the printed first-run credentials (then change them under Account). The form posts to `/api/contact` on
+this server by default, so `site.contactEndpoint` should stay empty.
 
 Example systemd unit:
 
@@ -137,7 +137,7 @@ and rebuild):
 | Key | What to enter |
 |---|---|
 | `site.url` | The public URL of the site, no trailing slash (`https://zehnox.com`) |
-| `site.contactEndpoint` | Where the contact form posts (`/api/contact`, a full URL, or empty for WhatsApp-only) |
+| `site.contactEndpoint` | Overrides where the contact form posts. Empty (the default) posts to this server's `/api/contact` |
 | `site.inquiryWebhook` | Optional URL that receives every inquiry as JSON (see §5) |
 | `contact.whatsapp` / `contact.whatsappDisplay` | Digits only (`923435441132`) / how it should read (`+92 343 5441132`) |
 | `contact.email`, `contact.phone`, `contact.office` | Primary email, phone, office address (Mirpur, AJK) |
@@ -155,11 +155,12 @@ the site (see `CONTRACT.md` §6) apply to content entered through the admin too.
 
 The form in `src/index.html` and `src/contact.html` (`form[data-contact]`) validates in the browser, then:
 
-1. If `site.contactEndpoint` is set, it `POST`s JSON to that URL (`{name, email, phone, company, iam, services,
-   brief, method, page}`) and expects a 2xx response.
-2. If the endpoint is empty or the request fails, it opens WhatsApp with the full message pre-filled.
+1. `POST`s JSON (`{name, email, phone, company, iam, services, brief, method, page}`) to `site.contactEndpoint`,
+   or to `/api/contact` when that setting is empty, and expects a 2xx response.
+2. If the request fails — including on a static deployment where nothing answers `/api/contact` — it opens
+   WhatsApp with the full message pre-filled.
 
-**Using the built-in server.** Set `site.contactEndpoint` to `/api/contact` (same host) or to the full URL of the
+**Using the built-in server.** Leave `site.contactEndpoint` empty (same host) or set it to the full URL of the
 server. Inquiries are stored in `data/inquiries.json` and listed in the admin under Inquiries. Each record is
 `{id, receivedAt, name, email, phone, company, iam, services, brief, method, page, ip}`.
 
