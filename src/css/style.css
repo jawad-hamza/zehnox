@@ -396,25 +396,35 @@ html:not(.js) .mk, .reduce .mk { fill-opacity: .16; }
 .contact__list .ul { justify-self: start; }
 .contact__small { font-size: .875rem; }
 /* The form reads as one object rather than fields floating on the page. */
-.form { display: grid; gap: 20px; padding: clamp(22px, 2.6vw, 38px); border: 1px solid var(--line-dark); border-radius: 24px; background: linear-gradient(165deg, rgba(242, 244, 245, .05), rgba(242, 244, 245, .012)); }
-.form__step { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; color: var(--lime); }
+.form { display: grid; gap: 18px; padding: clamp(22px, 2.6vw, 38px); border: 1px solid var(--line-dark); border-radius: 24px; background: linear-gradient(165deg, rgba(242, 244, 245, .05), rgba(242, 244, 245, .012)); }
+/* Three named groups instead of one flat run of twelve controls: filling in a form is a
+   sequence, so the steps are numbered and the rule carries the eye to the next one. */
+.form__step { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; font-family: var(--mono); font-size: .6875rem; letter-spacing: .16em; text-transform: uppercase; color: var(--lime); }
 .form__step::after { content: ""; height: 1px; background: var(--line-dark); }
-.form__step:not(:first-child) { margin-top: 10px; }
-.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.f3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
-.f2--bottom { align-items: end; }
+.form__step:not(:first-child) { margin-top: 22px; }
+.f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.f3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+/* Consent gates the button, so it sits directly above it rather than sharing a row with
+   the contact-method chips. */
+.form__consent { padding: 2px 0 0; }
 .field { display: grid; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
-.field > span, .field legend { font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dark); padding: 0; margin-bottom: 4px; }
-.field small { text-transform: none; letter-spacing: 0; font-family: var(--font); font-size: .8125rem; opacity: .8; margin-left: 8px; }
-.field input, .field select, .field textarea { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line-dark); color: var(--paper); font: inherit; padding: 9px 0; outline: 0; border-radius: 0; transition: border-color .3s; -webkit-appearance: none; appearance: none; }
-.field textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+/* The label carries its own hint on the right — "optional", "choose any", the characters
+   still needed — so each label is one line that reads left to right. */
+.field > span, .field legend { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-dark); padding: 0; margin-bottom: 4px; }
+.field small, .count { text-transform: none; letter-spacing: 0; font-family: var(--font); font-size: .8125rem; opacity: .75; font-style: normal; white-space: nowrap; }
+/* Inputs are wells, not underlines: on the gradient backdrop a single bottom rule read as a
+   stray line rather than somewhere to type, and it clashed with the solid pill chips
+   sitting directly beneath it. */
+.field input, .field select, .field textarea { width: 100%; background: rgba(242, 244, 245, .045); border: 1.5px solid rgba(242, 244, 245, .34); border-radius: 12px; color: var(--paper); font: inherit; padding: 13px 15px; outline: 0; transition: border-color .25s, background-color .25s, box-shadow .25s; -webkit-appearance: none; appearance: none; }
+.field textarea { resize: vertical; min-height: 124px; line-height: 1.55; }
 .field input::placeholder, .field textarea::placeholder { color: rgba(154, 156, 168, .55); }
-.field select { background-image: linear-gradient(45deg, transparent 50%, var(--lime) 50%), linear-gradient(135deg, var(--lime) 50%, transparent 50%); background-position: calc(100% - 14px) 50%, calc(100% - 8px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 32px; cursor: pointer; }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: rgba(242, 244, 245, .58); }
+.field select { background-image: linear-gradient(45deg, transparent 50%, var(--lime) 50%), linear-gradient(135deg, var(--lime) 50%, transparent 50%); background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px; cursor: pointer; }
 .field select option { color: var(--ink); }
-.field input:focus, .field select:focus, .field textarea:focus { border-bottom-color: var(--lime); box-shadow: 0 1px 0 0 var(--lime), 0 8px 22px -14px var(--lime); }
-.field.is-invalid input, .field.is-invalid select, .field.is-invalid textarea { border-bottom-color: #ff7a63; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--lime); background: rgba(206, 253, 33, .05); box-shadow: 0 0 0 3px rgba(206, 253, 33, .17); }
+.field.is-invalid input, .field.is-invalid select, .field.is-invalid textarea { border-color: #ff7a63; box-shadow: 0 0 0 3px rgba(255, 122, 99, .15); }
 .field.is-invalid legend, .field.is-invalid > span { color: #ff7a63; }
-.count { justify-self: end; font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; color: var(--muted-dark); font-style: normal; }
+.count.is-met { color: var(--lime); opacity: 1; }
 .pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .pill { position: relative; }
 .pill input { position: absolute; inset: 0; opacity: 0; margin: 0; }
@@ -637,8 +647,8 @@ a.tilecard:hover { border-color: rgba(242, 244, 245, .4); transform: translateY(
   .contact { padding: 88px 0 30px; }
   .form { gap: 14px; }
   .f2, .f3 { gap: 20px; }
-  .field input, .field select, .field textarea { padding: 7px 0; }
-  .field textarea { min-height: 64px; }
+  .field input, .field select, .field textarea { padding: 9px 13px; }
+  .field textarea { min-height: 88px; }
   .field > span, .field legend { margin-bottom: 0; }
   .pill span { padding: 7px 13px; font-size: .8125rem; }
   .form__actions .btn--lg { padding: 15px 26px; }

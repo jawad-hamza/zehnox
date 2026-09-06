@@ -239,7 +239,17 @@
   document.querySelectorAll("form[data-contact]").forEach((form) => {
     const err = form.querySelector(".form__err"), brief = form.elements.brief, count = form.querySelector(".count");
     const done = form.parentElement.querySelector(".form__done");
-    if (brief && count) brief.addEventListener("input", () => { count.textContent = brief.value.trim().length + " / 50"; });
+    /* "0 / 50" read as a 50-character limit when it is actually a minimum, and nothing said
+       so until the form refused to send. Count down to the threshold instead, and go lime
+       once it is met. */
+    const MIN_BRIEF = 50;
+    function paintCount() {
+      if (!brief || !count) return;
+      const short = MIN_BRIEF - brief.value.trim().length;
+      count.textContent = short > 0 ? short + (short === 1 ? " more character" : " more characters") : "ready to send";
+      count.classList.toggle("is-met", short <= 0);
+    }
+    if (brief && count) { brief.addEventListener("input", paintCount); paintCount(); }
     const flag = (el, bad) => { const box = el && el.closest(".field, .check"); if (box) box.classList.toggle("is-invalid", bad); };
     form.addEventListener("submit", async (e) => {
       e.preventDefault();

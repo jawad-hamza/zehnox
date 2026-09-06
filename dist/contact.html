@@ -93,21 +93,23 @@
       </div>
 
       <form class="form reveal" id="form" novalidate data-contact>
-        <div class="f3">
+        <span class="mono form__step">01 &mdash; Who you are</span>
+        <div class="f2">
           <label class="field"><span>Full name</span><input name="name" type="text" required autocomplete="name"></label>
           <label class="field"><span>Email address</span><input name="email" type="email" required autocomplete="email"></label>
-          <label class="field"><span>Phone / WhatsApp</span><input name="phone" type="tel" required placeholder="+92 300 0000000" autocomplete="tel"></label>
         </div>
         <div class="f2">
+          <label class="field"><span>Phone / WhatsApp</span><input name="phone" type="tel" required placeholder="+92 300 0000000" autocomplete="tel"></label>
           <label class="field"><span>Company / organization <small>optional</small></span><input name="company" type="text" autocomplete="organization"></label>
-          <label class="field">
-            <span>I am a…</span>
-            <select name="iam" required>
-              <option value="">Select one</option>
-              <option>Local Business</option><option>Corporate</option><option>School/College</option><option>Startup</option><option>Creator</option><option>Real Estate</option><option>Trading/Business Community</option><option>International Client</option><option>Other</option>
-            </select>
-          </label>
         </div>
+        <span class="mono form__step">02 &mdash; What you need</span>
+        <label class="field">
+          <span>I am a&hellip;</span>
+          <select name="iam" required>
+            <option value="">Select one</option>
+            <option>Local Business</option><option>Corporate</option><option>School/College</option><option>Startup</option><option>Creator</option><option>Real Estate</option><option>Trading/Business Community</option><option>International Client</option><option>Other</option>
+          </select>
+        </label>
         <fieldset class="field" data-services>
           <legend>Service of interest <small>choose any</small></legend>
           <div class="pills">
@@ -120,24 +122,22 @@
           </div>
         </fieldset>
         <label class="field">
-          <span>Project brief <small>min. 50 characters</small></span>
-          <textarea name="brief" rows="3" required minlength="50" placeholder="What happens today, what should be different, and what must not change."></textarea>
-          <em class="count">0 / 50</em>
+          <span>Project brief <em class="count">50 more characters</em></span>
+          <textarea name="brief" rows="4" required minlength="50" placeholder="What happens today, what should be different, and what must not change."></textarea>
         </label>
-        <div class="f2 f2--bottom">
-          <fieldset class="field" data-method>
-            <legend>Preferred contact method</legend>
-            <div class="pills">
-              <label class="pill"><input type="radio" name="method" value="WhatsApp"><span>WhatsApp</span></label>
-              <label class="pill"><input type="radio" name="method" value="Email"><span>Email</span></label>
-              <label class="pill"><input type="radio" name="method" value="Phone Call"><span>Phone Call</span></label>
-            </div>
-          </fieldset>
-          <label class="check"><input type="checkbox" name="consent" required><span>I have read the Privacy Policy and agree to be contacted about this enquiry.</span></label>
-        </div>
+        <span class="mono form__step">03 &mdash; How we reply</span>
+        <fieldset class="field" data-method>
+          <legend>Preferred contact method</legend>
+          <div class="pills">
+            <label class="pill"><input type="radio" name="method" value="WhatsApp"><span>WhatsApp</span></label>
+            <label class="pill"><input type="radio" name="method" value="Email"><span>Email</span></label>
+            <label class="pill"><input type="radio" name="method" value="Phone Call"><span>Phone Call</span></label>
+          </div>
+        </fieldset>
+        <label class="check form__consent"><input type="checkbox" name="consent" required><span>I have read the Privacy Policy and agree to be contacted about this enquiry.</span></label>
         <p class="form__err" role="alert" hidden></p>
         <div class="form__actions">
-          <button class="btn btn--lime btn--lg" type="submit" data-cursor="Send">Send a Message</button>
+          <button class="btn btn--lime btn--lg" type="submit" data-cursor="Send">Send brief</button>
           <span class="mono form__note">Goes straight to our inbox. WhatsApp optional.</span>
         </div>
       </form>

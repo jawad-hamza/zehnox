@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "1ee281dc-cfd0-4a21-855d-1a4ebe125346",
+    "receivedAt": "2026-09-06T20:43:44.717Z",
+    "name": "Zehnox",
+    "email": "zehnox.official@gmail.com",
+    "phone": "03120892388",
+    "company": "",
+    "iam": "School/College",
+    "services": [
+      "AI Automation"
+    ],
+    "brief": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+    "method": "Email",
+    "page": "http://127.0.0.1:3118/",
+    "ip": "127.0.0.1"
+  }
+]
