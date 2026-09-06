@@ -138,15 +138,22 @@
         <p class="form__err" role="alert" hidden></p>
         <div class="form__actions">
           <button class="btn btn--lime btn--lg" type="submit" data-cursor="Send">Send a Message</button>
-          <span class="mono form__note">Your brief is sent to ZEHNOX and prepared in WhatsApp.</span>
+          <span class="mono form__note">Goes straight to our inbox. WhatsApp optional.</span>
         </div>
       </form>
 
       <div class="form__done" hidden>
-        <span class="mono">Brief prepared</span>
-        <h3>Thank you. Your brief is ready.</h3>
-        <p data-wa-note>WhatsApp should have opened with your message filled in. If it did not, use the button below. We reply on the channel you chose.</p>
-        <p data-sent-note hidden>Your brief has been received. You can also send it on WhatsApp with the button below. We reply on the channel you chose.</p>
+        <div class="form__done-state" data-done="sent" hidden>
+          <span class="mono">Message sent</span>
+          <h3>Thank you &mdash; we have your brief.</h3>
+          <p>It is in our inbox now, and we reply on the channel you chose &mdash; usually within one working day.</p>
+          <p class="form__done-alt">Would you rather talk on WhatsApp? Send the same brief across in one tap.</p>
+        </div>
+        <div class="form__done-state" data-done="wa">
+          <span class="mono">Brief prepared</span>
+          <h3>One tap left &mdash; send it on WhatsApp.</h3>
+          <p>We could not reach our server just now, so your message is waiting in WhatsApp instead. If it did not open, use the button below.</p>
+        </div>
         <a class="btn btn--lime" href="https://wa.me/923435441132" data-wa="" target="_blank" rel="noopener" data-cursor="Send">Open in WhatsApp</a>
       </div>
     </div>

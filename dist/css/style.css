@@ -433,6 +433,11 @@ html:not(.js) .mk, .reduce .mk { fill-opacity: .16; }
 .form__done .mono { color: var(--lime); }
 .form__done p { color: var(--muted-dark); max-width: 50ch; }
 
+/* The confirmation has two outcomes - sent to the server, or handed to WhatsApp - and
+   only one of the two blocks is ever shown. */
+.form__done-state { display: grid; gap: 12px; justify-items: start; }
+.form__done-alt { font-size: 0.9375rem; opacity: .78; }
+
 /* ==========================================================================
    INNER-PAGE KIT — every page other than the homepage is built from these.
    ========================================================================== */

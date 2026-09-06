@@ -234,3 +234,37 @@ img { display: block; max-width: 100%; }
 @media (max-width: 480px) {
   .bar__actions #btnSignOut { display: none; }
 }
+
+/* ---------- inquiries: filter bar, unread state, reply ---------- */
+.filterbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 16px; }
+.filterbar input[type="search"], .filterbar select {
+  min-height: 44px; padding: 0 14px; background: var(--obsidian-2); border: 1px solid var(--line);
+  border-radius: 10px; color: var(--paper); font: inherit; font-size: 0.875rem;
+}
+.filterbar input[type="search"] { flex: 1 1 260px; }
+.filterbar input:focus, .filterbar select:focus { outline: none; border-color: var(--lime); }
+.filterbar__check { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.875rem; white-space: nowrap; }
+
+.tbl tr.is-unread td { background: rgba(206, 253, 33, .04); }
+.tbl tr.is-unread .from strong::before {
+  content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--lime); margin-right: 8px; vertical-align: middle;
+}
+.tbl .act .btn { display: block; width: 100%; margin-bottom: 6px; }
+.tbl .act .btn:last-child { margin-bottom: 0; }
+
+.replies { margin-top: 12px; border-left: 2px solid var(--line-strong); padding-left: 12px; }
+.replies__item { margin-bottom: 10px; }
+.replies__item:last-child { margin-bottom: 0; }
+.replies__meta { font-family: var(--mono); font-size: 0.625rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.replies__body { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--muted); margin-top: 4px; }
+
+.replybox { margin-top: 12px; display: grid; gap: 8px; }
+.replybox input, .replybox textarea {
+  width: 100%; padding: 10px 12px; background: var(--obsidian-2); border: 1px solid var(--line);
+  border-radius: 10px; color: var(--paper); font: inherit; font-size: 0.875rem;
+}
+.replybox textarea { min-height: 120px; resize: vertical; }
+.replybox input:focus, .replybox textarea:focus { outline: none; border-color: var(--lime); }
+.replybox__row { display: flex; gap: 8px; align-items: center; }
+.replybox__err { color: var(--danger); font-size: 0.8125rem; }

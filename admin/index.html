@@ -176,7 +176,12 @@
     <!-- 07 Inquiries -->
     <section class="panel" data-panel="inquiries" hidden>
       <div class="panel__head"><span class="mono lime">07</span><h2>Inquiries</h2><p>Enquiries stored by the contact form, newest first. Deleting is permanent.</p></div>
-      <div class="actions actions--start"><button class="btn btn--outline" type="button" id="btnInquiriesRefresh">Refresh</button><span class="hint" id="inquiriesCount"></span></div>
+      <div class="actions actions--start"><button class="btn btn--outline" type="button" id="btnInquiriesRefresh">Refresh</button><a class="btn btn--outline" id="inquiriesExport" href="/api/inquiries.csv">Export CSV</a><span class="hint" id="inquiriesCount"></span></div>
+      <div class="filterbar">
+        <input type="search" id="inquiriesSearch" placeholder="Search name, email, company or brief…" autocomplete="off">
+        <select id="inquiriesService"><option value="">All services</option></select>
+        <label class="filterbar__check"><input type="checkbox" id="inquiriesUnread"> Unread only</label>
+      </div>
       <div id="inquiries"></div>
     </section>
 

@@ -390,6 +390,38 @@ function emailInquiry(record) {
     .catch((e) => logErr("inquiry email failed for " + record.id + ": " + (e && e.message ? e.message : e)));
 }
 
+/* An admin's reply, with the original enquiry quoted underneath so the recipient has the
+   context without having to dig out our first email. */
+function replyEmailBody(record, message) {
+  const quoted = String(record.brief || "").split("\n").map((l) => "> " + l).join("\n");
+  return message +
+    "\n\n-- \nZEHNOX\n\n" +
+    "----- your original enquiry, " + (record.receivedAt || "") + " -----\n" + quoted + "\n";
+}
+
+/* ---------- CSV export ---------- */
+
+/* A cell opening with =, +, - or @ is run as a formula when the file is opened in Excel or
+   Sheets, and these cells hold text typed by strangers on a public form. Prefixing with an
+   apostrophe keeps the value visible and inert. */
+function csvCell(value) {
+  let s = value == null ? "" : Array.isArray(value) ? value.join(", ") : String(value);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+const CSV_COLUMNS = ["receivedAt", "name", "email", "phone", "company", "iam", "services", "method", "brief", "page", "ip", "read", "replies"];
+
+function inquiriesCsv(list) {
+  const rows = list.map((q) => CSV_COLUMNS.map((c) => {
+    if (c === "read") return q.read ? "yes" : "no";
+    if (c === "replies") return Array.isArray(q.replies) ? q.replies.length : 0;
+    return csvCell(q[c]);
+  }).join(","));
+  // The BOM makes Excel read it as UTF-8 rather than the local codepage.
+  return "\uFEFF" + [CSV_COLUMNS.join(","), ...rows].join("\r\n") + "\r\n";
+}
+
 /* ---------- webhook forward (fire-and-forget) ---------- */
 function forwardInquiry(record) {
   const c = readContentSafe();
@@ -623,15 +655,75 @@ async function handleApi(req, res, url) {
     return sendJson(res, 200, readInquiries().slice().reverse());
   }
 
-  const del = /^\/api\/inquiries\/([A-Za-z0-9-]{1,80})$/.exec(p);
-  if (del) {
+  if (p === "/api/inquiries.csv") {
+    if (method !== "GET") return fail(res, 405, "Method not allowed");
+    const stamp = new Date().toISOString().slice(0, 10);
+    return send(res, 200, inquiriesCsv(readInquiries().slice().reverse()), {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": 'attachment; filename="zehnox-inquiries-' + stamp + '.csv"',
+      "Cache-Control": "no-store",
+    });
+  }
+
+  const replyTo = /^\/api\/inquiries\/([A-Za-z0-9-]{1,80})\/reply$/.exec(p);
+  if (replyTo) {
+    if (method !== "POST") return fail(res, 405, "Method not allowed");
+    const body = await readJson(req, 64 * 1024);
+    const message = str(body && body.message, 10000);
+    const subject = str(body && body.subject, 200) || "Re: your enquiry to ZEHNOX";
+    if (!message) return fail(res, 400, "The reply is empty");
+    const list = readInquiries();
+    const record = list.find((i) => i && i.id === replyTo[1]);
+    if (!record) return fail(res, 404, "Inquiry not found");
+    if (!isEmail(record.email)) return fail(res, 400, "This enquiry has no usable email address to reply to");
+    if (!SMTP.user || !SMTP.pass) return fail(res, 503, "Email is not set up on the server yet, so the reply cannot be sent");
+
+    /* Their answer should land in the shared inbox, not in whatever address the server
+       authenticates as, so Reply-To points at the forwarding address. */
+    const inbox = inquiryRecipient() || SMTP.from;
+    try {
+      await sendMail({
+        host: SMTP.host, port: SMTP.port, user: SMTP.user, pass: SMTP.pass,
+        from: SMTP.from, fromName: "ZEHNOX", to: [record.email],
+        replyTo: inbox, replyToName: "ZEHNOX",
+        subject, text: replyEmailBody(record, message),
+        rejectUnauthorized: SMTP.rejectUnauthorized,
+      });
+    } catch (e) {
+      /* The admin is waiting on this one, unlike the fire-and-forget inquiry forward:
+         reporting a false success would be worse than reporting the failure. */
+      logErr("reply to inquiry " + record.id + " failed: " + (e && e.message ? e.message : e));
+      return fail(res, 502, "The reply could not be sent: " + (e && e.message ? e.message : e));
+    }
+
+    const entry = { at: new Date().toISOString(), by: session.username, subject, body: message };
+    if (!Array.isArray(record.replies)) record.replies = [];
+    record.replies.push(entry);
+    record.read = true;
+    writeInquiries(list);
+    log("replied to inquiry " + record.id + " (" + record.email + ")");
+    return sendJson(res, 200, { ok: true, id: record.id, reply: entry });
+  }
+
+  const one = /^\/api\/inquiries\/([A-Za-z0-9-]{1,80})$/.exec(p);
+  if (one) {
+    if (method === "PATCH") {
+      const body = await readJson(req, 8 * 1024);
+      const list = readInquiries();
+      const record = list.find((i) => i && i.id === one[1]);
+      if (!record) return fail(res, 404, "Inquiry not found");
+      if (typeof (body && body.read) !== "boolean") return fail(res, 400, '"read" must be true or false');
+      record.read = body.read;
+      writeInquiries(list);
+      return sendJson(res, 200, { ok: true, id: record.id, read: record.read });
+    }
     if (method !== "DELETE") return fail(res, 405, "Method not allowed");
     const list = readInquiries();
-    const next = list.filter((i) => i && i.id !== del[1]);
+    const next = list.filter((i) => i && i.id !== one[1]);
     if (next.length === list.length) return fail(res, 404, "Inquiry not found");
     writeInquiries(next);
-    log("inquiry deleted " + del[1]);
-    return sendJson(res, 200, { ok: true, id: del[1] });
+    log("inquiry deleted " + one[1]);
+    return sendJson(res, 200, { ok: true, id: one[1] });
   }
 
   return fail(res, 404, "Unknown API route");

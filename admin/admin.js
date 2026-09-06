@@ -63,7 +63,8 @@
     whoami: $("#whoami"), accountForm: $("#accountForm"), accountError: $("#accountError"),
     fail: $("#fail"), failMessage: $("#failMessage"), loading: $("#loading"), app: $("#app"), main: $("#main"),
     dirtyState: $("#dirtyState"), dirtyText: $("#dirtyText"), problems: $("#problems"), problemsList: $("#problemsList"),
-    teamList: $("#teamList"), workList: $("#workList"), postList: $("#postList"), inquiries: $("#inquiries"), inquiriesCount: $("#inquiriesCount")
+    teamList: $("#teamList"), workList: $("#workList"), postList: $("#postList"), inquiries: $("#inquiries"), inquiriesCount: $("#inquiriesCount"),
+    inquiriesSearch: $("#inquiriesSearch"), inquiriesService: $("#inquiriesService"), inquiriesUnread: $("#inquiriesUnread")
   };
 
   /* ---------- toast ---------- */
@@ -298,30 +299,93 @@
   const whenOf = (q) => q.receivedAt || q.createdAt || q.created || q.date || q.time || q.at || q.ts || q.timestamp || "";
   const KNOWN = ["id", "receivedAt", "createdAt", "created", "date", "time", "at", "ts", "timestamp", "name", "email", "phone", "company", "brief", "message", "iam", "services", "service", "method", "page", "ip", "userAgent"];
 
+  /* The fetched list is kept here so filtering and marking read repaint from memory
+     instead of going back to the server for every keystroke. */
+  let inquiriesData = [];
+
+  const servicesOf = (q) => Array.isArray(q.services) ? q.services : (q.services || q.service ? [q.services || q.service] : []);
+  const repliesOf = (q) => Array.isArray(q.replies) ? q.replies : [];
+
   function renderInquiries(items) {
-    const list = arr(items && !Array.isArray(items) ? (items.inquiries || items.items || items.data) : items).slice();
-    list.sort((a, b) => {
-      const ta = Date.parse(whenOf(a)) || 0, tb = Date.parse(whenOf(b)) || 0;
-      return tb - ta;
-    });
-    el.inquiriesCount.textContent = list.length ? list.length + (list.length === 1 ? " enquiry" : " enquiries") : "";
-    if (!list.length) { el.inquiries.innerHTML = '<div class="empty">No enquiries yet. Submissions from the contact form appear here when the site posts to this server.</div>'; return; }
-    el.inquiries.innerHTML = '<table class="tbl"><thead><tr><th>Received</th><th>From</th><th>Enquiry</th><th></th></tr></thead><tbody>' + list.map((q) => {
-      const services = Array.isArray(q.services) ? q.services : (q.services || q.service ? [q.services || q.service] : []);
-      const meta = [].concat(q.iam ? ["I am: " + q.iam] : [], services, q.method ? ["Prefers " + q.method] : []);
-      const extra = Object.keys(q).filter((k) => !KNOWN.includes(k) && q[k] != null && String(q[k]).trim() !== "" && typeof q[k] !== "object");
-      return "<tr>" +
-        '<td class="when">' + esc(fmtWhen(whenOf(q))) + "</td>" +
-        '<td class="from"><strong>' + esc(q.name || "—") + "</strong>" +
-          (q.email ? '<a href="mailto:' + attr(q.email) + '">' + esc(q.email) + "</a>" : "") +
-          (q.phone ? "<span>" + esc(q.phone) + "</span>" : "") +
-          (q.company ? "<span>" + esc(q.company) + "</span>" : "") + "</td>" +
-        '<td><div class="msg">' + esc(q.brief || q.message || "—") + "</div>" +
-          (meta.length || extra.length ? '<div class="meta">' + meta.map((m) => "<span>" + esc(m) + "</span>").join("") + extra.map((k) => "<span>" + esc(k + ": " + q[k]) + "</span>").join("") + "</div>" : "") +
-          (q.page ? '<div class="meta"><span>' + esc(String(q.page).replace(/^https?:\/\/[^/]+/, "") || "/") + "</span></div>" : "") + "</td>" +
-        '<td class="act"><button class="btn btn--sm btn--danger" type="button" data-del="' + attr(q.id) + '">Delete</button></td>' +
-      "</tr>";
-    }).join("") + "</tbody></table>";
+    inquiriesData = arr(items && !Array.isArray(items) ? (items.inquiries || items.items || items.data) : items).slice();
+    inquiriesData.sort((a, b) => (Date.parse(whenOf(b)) || 0) - (Date.parse(whenOf(a)) || 0));
+    fillServiceFilter();
+    paintInquiries();
+  }
+
+  function fillServiceFilter() {
+    if (!el.inquiriesService) return;
+    const seen = [];
+    inquiriesData.forEach((q) => servicesOf(q).forEach((s) => {
+      const v = String(s).trim();
+      if (v && seen.indexOf(v) === -1) seen.push(v);
+    }));
+    seen.sort();
+    const current = el.inquiriesService.value;
+    el.inquiriesService.innerHTML = '<option value="">All services</option>' +
+      seen.map((s) => '<option value="' + attr(s) + '">' + esc(s) + "</option>").join("");
+    if (seen.indexOf(current) !== -1) el.inquiriesService.value = current;
+  }
+
+  function matchesFilters(q) {
+    if (el.inquiriesUnread && el.inquiriesUnread.checked && q.read) return false;
+    const service = el.inquiriesService ? el.inquiriesService.value : "";
+    if (service && servicesOf(q).indexOf(service) === -1) return false;
+    const term = el.inquiriesSearch ? el.inquiriesSearch.value.trim().toLowerCase() : "";
+    if (!term) return true;
+    const hay = [q.name, q.email, q.company, q.phone, q.brief || q.message, q.iam, servicesOf(q).join(" ")]
+      .filter(Boolean).join(" ").toLowerCase();
+    return hay.indexOf(term) !== -1;
+  }
+
+  function paintInquiries() {
+    const list = inquiriesData.filter(matchesFilters);
+    const unread = inquiriesData.filter((q) => !q.read).length;
+    const bits = [];
+    if (inquiriesData.length) bits.push(inquiriesData.length + (inquiriesData.length === 1 ? " enquiry" : " enquiries"));
+    if (unread) bits.push(unread + " unread");
+    if (list.length !== inquiriesData.length) bits.push("showing " + list.length);
+    el.inquiriesCount.textContent = bits.join(" · ");
+
+    if (!inquiriesData.length) { el.inquiries.innerHTML = '<div class="empty">No enquiries yet. Submissions from the contact form appear here when the site posts to this server.</div>'; return; }
+    if (!list.length) { el.inquiries.innerHTML = '<div class="empty">No enquiries match these filters.</div>'; return; }
+    el.inquiries.innerHTML = '<table class="tbl"><thead><tr><th>Received</th><th>From</th><th>Enquiry</th><th></th></tr></thead><tbody>' +
+      list.map(inquiryRow).join("") + "</tbody></table>";
+  }
+
+  function inquiryRow(q) {
+    const services = servicesOf(q);
+    const meta = [].concat(q.iam ? ["I am: " + q.iam] : [], services, q.method ? ["Prefers " + q.method] : []);
+    const extra = Object.keys(q).filter((k) => !KNOWN.includes(k) && q[k] != null && String(q[k]).trim() !== "" && typeof q[k] !== "object");
+    const replies = repliesOf(q);
+    return '<tr' + (q.read ? "" : ' class="is-unread"') + ' data-row="' + attr(q.id) + '">' +
+      '<td class="when">' + esc(fmtWhen(whenOf(q))) + "</td>" +
+      '<td class="from"><strong>' + esc(q.name || "—") + "</strong>" +
+        (q.email ? '<a href="mailto:' + attr(q.email) + '">' + esc(q.email) + "</a>" : "") +
+        (q.phone ? "<span>" + esc(q.phone) + "</span>" : "") +
+        (q.company ? "<span>" + esc(q.company) + "</span>" : "") + "</td>" +
+      '<td><div class="msg">' + esc(q.brief || q.message || "—") + "</div>" +
+        (meta.length || extra.length ? '<div class="meta">' + meta.map((m) => "<span>" + esc(m) + "</span>").join("") + extra.map((k) => "<span>" + esc(k + ": " + q[k]) + "</span>").join("") + "</div>" : "") +
+        (q.page ? '<div class="meta"><span>' + esc(String(q.page).replace(/^https?:\/\/[^/]+/, "") || "/") + "</span></div>" : "") +
+        (replies.length ? '<div class="replies">' + replies.map((r) =>
+          '<div class="replies__item"><div class="replies__meta">Replied ' + esc(fmtWhen(r.at)) + (r.by ? " by " + esc(r.by) : "") + "</div>" +
+          '<div class="replies__body">' + esc(r.body || "") + "</div></div>").join("") + "</div>" : "") +
+        '<div class="replybox" data-box hidden>' +
+          '<input type="text" data-subject value="Re: your enquiry to ZEHNOX">' +
+          '<textarea data-message rows="5" placeholder="Write your reply…"></textarea>' +
+          '<div class="replybox__err" data-err hidden></div>' +
+          '<div class="replybox__row">' +
+            '<button class="btn btn--sm btn--lime" type="button" data-send="' + attr(q.id) + '">Send reply</button>' +
+            '<button class="btn btn--sm btn--text" type="button" data-cancel="1">Cancel</button>' +
+          "</div>" +
+        "</div>" +
+      "</td>" +
+      '<td class="act">' +
+        (q.email ? '<button class="btn btn--sm btn--outline" type="button" data-reply="' + attr(q.id) + '">Reply</button>' : "") +
+        '<button class="btn btn--sm btn--ghost" type="button" data-read="' + attr(q.id) + '">' + (q.read ? "Mark unread" : "Mark read") + "</button>" +
+        '<button class="btn btn--sm btn--danger" type="button" data-del="' + attr(q.id) + '">Delete</button>' +
+      "</td>" +
+    "</tr>";
   }
 
   async function loadInquiries(silent) {
@@ -569,7 +633,71 @@
     if (btn.dataset.act) { listAction(btn.dataset.act, btn.dataset.list, btn.dataset.index); return; }
     if (btn.dataset.add) { addItem(btn.dataset.add); return; }
     if (btn.dataset.problem != null) { const p = el.problems._items && el.problems._items[+btn.dataset.problem]; if (p) focusProblem(p); return; }
+    if (btn.dataset.reply != null) { openReply(btn); return; }
+    if (btn.dataset.cancel != null) { closeReply(btn); return; }
+    if (btn.dataset.send != null) { sendReply(btn.dataset.send, btn); return; }
+    if (btn.dataset.read != null) { toggleRead(btn.dataset.read, btn); return; }
     if (btn.dataset.del != null) { deleteInquiry(btn.dataset.del, btn); }
+  }
+
+  const boxFor = (btn) => { const row = btn.closest("tr"); return row && $("[data-box]", row); };
+
+  function openReply(btn) {
+    const box = boxFor(btn);
+    if (!box) return;
+    box.hidden = !box.hidden;
+    if (!box.hidden) { const t = $("[data-message]", box); if (t) t.focus(); }
+  }
+
+  function closeReply(btn) {
+    const box = boxFor(btn);
+    if (box) box.hidden = true;
+  }
+
+  async function sendReply(id, btn) {
+    const box = boxFor(btn);
+    if (!box) return;
+    const subject = ($("[data-subject]", box).value || "").trim();
+    const message = ($("[data-message]", box).value || "").trim();
+    const err = $("[data-err]", box);
+    const showErr = (m) => { if (err) { err.textContent = m; err.hidden = !m; } };
+    if (!message) return showErr("Write a message before sending.");
+    showErr("");
+    btn.disabled = true;
+    const label = btn.textContent;
+    btn.textContent = "Sending…";
+    try {
+      const out = await api("POST", "/api/inquiries/" + encodeURIComponent(id) + "/reply", { subject, message });
+      const record = inquiriesData.find((q) => q && q.id === id);
+      if (record) {
+        if (!Array.isArray(record.replies)) record.replies = [];
+        record.replies.push(out.reply);
+        record.read = true;
+      }
+      paintInquiries();
+      toast("Reply sent");
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = label;
+      // The server reports a real send failure rather than a silent success, so surface it
+      // next to the box the message is still sitting in.
+      if (!e.auth) showErr(e.message);
+    }
+  }
+
+  async function toggleRead(id, btn) {
+    const record = inquiriesData.find((q) => q && q.id === id);
+    if (!record) return;
+    const next = !record.read;
+    btn.disabled = true;
+    try {
+      await api("PATCH", "/api/inquiries/" + encodeURIComponent(id), { read: next });
+      record.read = next;
+      paintInquiries();
+    } catch (e) {
+      btn.disabled = false;
+      if (!e.auth) toast("Could not update: " + e.message, "error");
+    }
   }
 
   async function deleteInquiry(id, btn) {
@@ -577,11 +705,8 @@
     btn.disabled = true;
     try {
       await api("DELETE", "/api/inquiries/" + encodeURIComponent(id));
-      const row = btn.closest("tr");
-      if (row) row.remove();
-      const left = $$(".tbl tbody tr", el.inquiries).length;
-      el.inquiriesCount.textContent = left ? left + (left === 1 ? " enquiry" : " enquiries") : "";
-      if (!left) el.inquiries.innerHTML = '<div class="empty">No enquiries yet. Submissions from the contact form appear here when the site posts to this server.</div>';
+      inquiriesData = inquiriesData.filter((q) => !q || q.id !== id);
+      paintInquiries();
       toast("Enquiry deleted");
     } catch (e) {
       btn.disabled = false;
@@ -714,6 +839,9 @@
   $("#btnSave").addEventListener("click", save);
   $("#btnRebuild").addEventListener("click", rebuild);
   $("#btnInquiriesRefresh").addEventListener("click", () => loadInquiries(false));
+  if (el.inquiriesSearch) el.inquiriesSearch.addEventListener("input", paintInquiries);
+  if (el.inquiriesService) el.inquiriesService.addEventListener("change", paintInquiries);
+  if (el.inquiriesUnread) el.inquiriesUnread.addEventListener("change", paintInquiries);
   el.main.addEventListener("input", onInput);
   el.main.addEventListener("change", (e) => {
     if (e.target.matches("input[type=file][data-upload]")) upload(e.target);

@@ -276,9 +276,13 @@
       }
       if (!sent) window.open(wa, "_blank", "noopener");
       if (done) {
-        const link = done.querySelector("a"); if (link) link.href = wa;
-        const note = done.querySelector("[data-sent-note]"); if (note) note.hidden = !sent;
-        const note2 = done.querySelector("[data-wa-note]"); if (note2) note2.hidden = sent;
+        /* Two different outcomes, so two different messages: the enquiry reached the
+           server, or it did not and WhatsApp is carrying it instead. Saying "your brief is
+           ready" for both told the sender nothing about which had happened. */
+        const link = done.querySelector("a");
+        if (link) { link.href = wa; link.textContent = sent ? "Also send on WhatsApp" : "Open in WhatsApp"; }
+        const okState = done.querySelector('[data-done="sent"]'); if (okState) okState.hidden = !sent;
+        const waState = done.querySelector('[data-done="wa"]'); if (waState) waState.hidden = sent;
         form.hidden = true; done.hidden = false;
         if (hasGsap) gsap.from(done, { opacity: 0, y: 20, duration: .8, ease: "power3.out" });
       }
