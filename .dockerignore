@@ -1,0 +1,6 @@
+.git
+.github
+Dockerfile
+compose.yaml
+data
+src/uploads
