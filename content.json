@@ -13,7 +13,7 @@
     "email": "",
     "phone": "",
     "office": "",
-    "mapEmbed": ""
+    "mapEmbed": "https://www.google.com/maps?q=33.14727899580238,73.75891646499721&z=16&output=embed"
   },
   "social": {
     "instagram": "",
@@ -36,7 +36,7 @@
     {
       "name": "",
       "role": "Lead, AI Automation",
-      "discipline": "AI Automation",
+      "discipline": "Management",
       "bio": "",
       "photo": ""
     },
