@@ -35,6 +35,13 @@
   const today = () => new Date().toISOString().slice(0, 10);
   const splitTags = (s) => String(s || "").split(",").map((t) => t.trim()).filter(Boolean);
   const isUrl = (s) => /^https?:\/\/\S+$/i.test(String(s).trim());
+  /* Google Maps' "Share → Embed a map" hands over a whole <iframe …> snippet, not a bare
+     URL. Accept either and store just the src, which is what src/js/site.js reads. */
+  const mapSrc = (s) => {
+    const raw = String(s == null ? "" : s).trim();
+    const pasted = raw.match(/src=["']([^"']+)["']/);
+    return (pasted ? pasted[1] : raw).trim();
+  };
   const isSlug = (s) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s);
   const isIsoDate = (s) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
@@ -130,7 +137,7 @@
     const c = content;
     return {
       site: { name: c.site.name, slogan: c.site.slogan, url: c.site.url.trim(), ecosystemLine: c.site.ecosystemLine, contactEndpoint: c.site.contactEndpoint.trim(), inquiryWebhook: c.site.inquiryWebhook.trim(), inquiryEmail: c.site.inquiryEmail.trim() },
-      contact: { whatsapp: c.contact.whatsapp.trim(), whatsappDisplay: c.contact.whatsappDisplay.trim(), email: c.contact.email.trim(), phone: c.contact.phone.trim(), office: c.contact.office.trim(), mapEmbed: c.contact.mapEmbed.trim() },
+      contact: { whatsapp: c.contact.whatsapp.trim(), whatsappDisplay: c.contact.whatsappDisplay.trim(), email: c.contact.email.trim(), phone: c.contact.phone.trim(), office: c.contact.office.trim(), mapEmbed: mapSrc(c.contact.mapEmbed) },
       social: SOCIAL_KEYS.reduce((o, k) => { o[k] = c.social[k].trim(); return o; }, {}),
       team: c.team.map((m) => {
         const out = { name: m.name.trim(), role: m.role.trim(), discipline: m.discipline.trim(), bio: m.bio.trim() };
@@ -339,7 +346,11 @@
     urlCheck("site", "site.url", "Site URL");
     urlCheck("site", "site.contactEndpoint", "Contact form endpoint");
     urlCheck("site", "site.inquiryWebhook", "Inquiry webhook");
-    urlCheck("site", "contact.mapEmbed", "Map embed URL");
+    /* Checked against the normalised value from toJSON(), so pasting the whole <iframe>
+       is fine. https only, because that is all site.js will put in the frame. */
+    if (c.contact.mapEmbed && !/^https:\/\/\S+$/i.test(c.contact.mapEmbed)) {
+      add("site", "contact.mapEmbed", "Map embed must be the https:// link from Google Maps → Share → Embed a map (pasting the whole <iframe> snippet works too)");
+    }
     if (!/^\d*$/.test(c.contact.whatsapp)) add("site", "contact.whatsapp", "WhatsApp number must contain digits only (no +, spaces or dashes)");
     else if (c.contact.whatsapp && (c.contact.whatsapp.length < 8 || c.contact.whatsapp.length > 15)) add("site", "contact.whatsapp", "WhatsApp number should be 8–15 digits including the country code");
     if (c.contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.contact.email)) add("site", "contact.email", "Email does not look valid");
