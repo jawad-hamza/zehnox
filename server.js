@@ -17,6 +17,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { build } = require("./build.js");
+const { writeFileAtomic } = require("./write-file.js");
+const { sendMail, isEmail } = require("./smtp.js");
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, "dist");
@@ -71,9 +73,7 @@ function readAuth() {
 function writeAuth(username, password) {
   const salt = crypto.randomBytes(16).toString("hex");
   const rec = { username, salt, hash: hashPassword(password, salt), updatedAt: new Date().toISOString() };
-  const tmp = AUTH_FILE + ".tmp";
-  fs.writeFileSync(tmp, JSON.stringify(rec, null, 2) + "\n", { mode: 0o600 });
-  fs.renameSync(tmp, AUTH_FILE);
+  writeFileAtomic(AUTH_FILE, JSON.stringify(rec, null, 2) + "\n", { mode: 0o600 });
   return rec;
 }
 function verifyPassword(password) {
@@ -262,9 +262,7 @@ function readInquiries() {
   }
 }
 function writeInquiries(list) {
-  const tmp = INQUIRIES_FILE + ".tmp";
-  fs.writeFileSync(tmp, JSON.stringify(list, null, 2) + "\n");
-  fs.renameSync(tmp, INQUIRIES_FILE);
+  writeFileAtomic(INQUIRIES_FILE, JSON.stringify(list, null, 2) + "\n");
 }
 
 /* ---------- validation ---------- */
@@ -309,6 +307,7 @@ function validateContentShape(c) {
   for (const w of c.work) if (w.tags != null && !Array.isArray(w.tags)) return "work.tags must be an array";
   if (c.site.url) { try { new URL(c.site.url); } catch (_) { return "site.url must be a full URL (https://…)"; } }
   if (c.site.inquiryWebhook) { try { new URL(c.site.inquiryWebhook); } catch (_) { return "site.inquiryWebhook must be a full URL"; } }
+  if (c.site.inquiryEmail && !isEmail(c.site.inquiryEmail.trim())) return "site.inquiryEmail must be one email address, like info@zehnox.com";
   return "";
 }
 
@@ -324,6 +323,71 @@ function uniquePath(dir, filename) {
   let candidate = filename, n = 2;
   while (fs.existsSync(path.join(dir, candidate))) candidate = stem + "-" + n++ + ext;
   return candidate;
+}
+
+/* ---------- email forward (fire-and-forget) ---------- */
+
+/* Credentials come from the environment only — never from content.json, which the admin
+   panel writes and git tracks. With SMTP_USER/SMTP_PASS unset, forwarding is skipped and
+   the inquiry is still stored; a misconfigured relay must never cost us a lead. */
+const SMTP = {
+  host: process.env.SMTP_HOST || "mail.zehnox.com",
+  port: parseInt(process.env.SMTP_PORT || "587", 10) || 587,
+  user: process.env.SMTP_USER || "",
+  pass: process.env.SMTP_PASS || "",
+  from: process.env.SMTP_FROM || "info@zehnox.com",
+  // Escape hatch for a relay with a self-signed certificate. Verification stays on unless
+  // this is set deliberately.
+  rejectUnauthorized: process.env.SMTP_INSECURE_TLS !== "1",
+};
+let smtpWarned = false;
+
+/* Where inquiries are emailed: the admin's "Forward inquiries to" field, falling back to
+   the public contact address so this works before anyone touches the setting. */
+function inquiryRecipient(content) {
+  const c = content || readContentSafe();
+  const configured = c && c.site && typeof c.site.inquiryEmail === "string" ? c.site.inquiryEmail.trim() : "";
+  const fallback = c && c.contact && typeof c.contact.email === "string" ? c.contact.email.trim() : "";
+  const chosen = configured || fallback;
+  return isEmail(chosen) ? chosen : "";
+}
+
+function inquiryEmailBody(record) {
+  const rows = [
+    ["Name", record.name],
+    ["Email", record.email],
+    ["Phone", record.phone],
+    ["Company", record.company],
+    ["They are", record.iam],
+    ["Services", Array.isArray(record.services) ? record.services.join(", ") : ""],
+    ["Preferred contact", record.method],
+    ["Sent from page", record.page],
+    ["Received", record.receivedAt],
+    ["Reference", record.id],
+  ].filter(([, v]) => v);
+  return rows.map(([k, v]) => k + ": " + v).join("\n") +
+    "\n\nBrief\n-----\n" + (record.brief || "") +
+    "\n\n-- \nSent by the ZEHNOX website. Reply to this email to answer " + record.name + " directly.\n";
+}
+
+function emailInquiry(record) {
+  const to = inquiryRecipient();
+  if (!to) { logErr("inquiry email skipped: no valid recipient (set site.inquiryEmail or contact.email)"); return; }
+  if (!SMTP.user || !SMTP.pass) {
+    if (!smtpWarned) { smtpWarned = true; logErr("inquiry email skipped: SMTP_USER/SMTP_PASS are not set"); }
+    return;
+  }
+  sendMail({
+    host: SMTP.host, port: SMTP.port, user: SMTP.user, pass: SMTP.pass,
+    from: SMTP.from, fromName: "ZEHNOX website", to: [to],
+    // Reply goes to the person who filled in the form, not to our own send address.
+    replyTo: record.email, replyToName: record.name,
+    subject: "New inquiry from " + record.name + (record.company ? " (" + record.company + ")" : ""),
+    text: inquiryEmailBody(record),
+    rejectUnauthorized: SMTP.rejectUnauthorized,
+  })
+    .then(() => log("inquiry " + record.id + " emailed to " + to))
+    .catch((e) => logErr("inquiry email failed for " + record.id + ": " + (e && e.message ? e.message : e)));
 }
 
 /* ---------- webhook forward (fire-and-forget) ---------- */
@@ -432,6 +496,7 @@ async function handleApi(req, res, url) {
     while (list.length > MAX_INQUIRIES) list.shift();
     writeInquiries(list);
     log("inquiry " + record.id + " from " + record.email);
+    emailInquiry(record);
     forwardInquiry(record);
     return sendJson(res, 201, { ok: true, id: record.id });
   }
@@ -505,9 +570,7 @@ async function handleApi(req, res, url) {
       const body = await readJson(req, JSON_LIMIT);
       const problem = validateContentShape(body);
       if (problem) return fail(res, 400, problem);
-      const tmp = CONTENT_FILE + ".tmp";
-      fs.writeFileSync(tmp, JSON.stringify(body, null, 2) + "\n");
-      fs.renameSync(tmp, CONTENT_FILE);
+      writeFileAtomic(CONTENT_FILE, JSON.stringify(body, null, 2) + "\n");
       log("content.json updated");
       try {
         const result = await runBuild();

@@ -4,3 +4,5 @@ Dockerfile
 compose.yaml
 data
 src/uploads
+.env
+.env.*

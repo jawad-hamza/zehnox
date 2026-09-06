@@ -63,9 +63,22 @@ function readContent() {
   return content;
 }
 
+/* Settings the server acts on but no page should ever read. window.CONTENT ships to every
+   visitor, so anything left in here is public: the webhook URL would be an open endpoint
+   for anyone to POST to, and the forwarding address is an inbox we would be publishing to
+   scrapers. site.contactEndpoint deliberately stays \u2014 src/js/site.js reads it. */
+const SERVER_ONLY_SITE_KEYS = ["inquiryWebhook", "inquiryEmail"];
+
+function publicContent(content) {
+  if (!content || typeof content.site !== "object" || content.site === null) return content;
+  const site = Object.assign({}, content.site);
+  for (const key of SERVER_ONLY_SITE_KEYS) delete site[key];
+  return Object.assign({}, content, { site });
+}
+
 /* Serialise for a <script> tag: never let "</script" or line separators break the page. */
 function contentJs(content) {
-  const json = JSON.stringify(content).replace(/<\//g, "<\\/").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  const json = JSON.stringify(publicContent(content)).replace(/<\//g, "<\\/").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
   return CONTENT_JS_HEADER + "\nwindow.CONTENT = " + json + ";\n";
 }
 

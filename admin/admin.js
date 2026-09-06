@@ -115,7 +115,7 @@
     const r = raw && typeof raw === "object" ? raw : {};
     const site = r.site || {}, contact = r.contact || {}, social = r.social || {}, legal = r.legal || {};
     return {
-      site: { name: str(site.name) || "ZEHNOX", slogan: str(site.slogan) || "From Mind to World", url: str(site.url), ecosystemLine: str(site.ecosystemLine) || "A STRATEGIC Ecosystem brand", contactEndpoint: str(site.contactEndpoint), inquiryWebhook: str(site.inquiryWebhook) },
+      site: { name: str(site.name) || "ZEHNOX", slogan: str(site.slogan) || "From Mind to World", url: str(site.url), ecosystemLine: str(site.ecosystemLine) || "A STRATEGIC Ecosystem brand", contactEndpoint: str(site.contactEndpoint), inquiryWebhook: str(site.inquiryWebhook), inquiryEmail: str(site.inquiryEmail) },
       contact: { whatsapp: str(contact.whatsapp), whatsappDisplay: str(contact.whatsappDisplay), email: str(contact.email), phone: str(contact.phone), office: str(contact.office), mapEmbed: str(contact.mapEmbed) },
       social: SOCIAL_KEYS.reduce((o, k) => { o[k] = str(social[k]); return o; }, {}),
       team: arr(r.team).map((m) => ({ name: str(m.name), role: str(m.role), discipline: str(m.discipline) || "AI Automation", bio: str(m.bio), quote: str(m.quote), photo: str(m.photo), founder: !!m.founder })),
@@ -129,7 +129,7 @@
   function toJSON() {
     const c = content;
     return {
-      site: { name: c.site.name, slogan: c.site.slogan, url: c.site.url.trim(), ecosystemLine: c.site.ecosystemLine, contactEndpoint: c.site.contactEndpoint.trim(), inquiryWebhook: c.site.inquiryWebhook.trim() },
+      site: { name: c.site.name, slogan: c.site.slogan, url: c.site.url.trim(), ecosystemLine: c.site.ecosystemLine, contactEndpoint: c.site.contactEndpoint.trim(), inquiryWebhook: c.site.inquiryWebhook.trim(), inquiryEmail: c.site.inquiryEmail.trim() },
       contact: { whatsapp: c.contact.whatsapp.trim(), whatsappDisplay: c.contact.whatsappDisplay.trim(), email: c.contact.email.trim(), phone: c.contact.phone.trim(), office: c.contact.office.trim(), mapEmbed: c.contact.mapEmbed.trim() },
       social: SOCIAL_KEYS.reduce((o, k) => { o[k] = c.social[k].trim(); return o; }, {}),
       team: c.team.map((m) => {
@@ -343,6 +343,7 @@
     if (!/^\d*$/.test(c.contact.whatsapp)) add("site", "contact.whatsapp", "WhatsApp number must contain digits only (no +, spaces or dashes)");
     else if (c.contact.whatsapp && (c.contact.whatsapp.length < 8 || c.contact.whatsapp.length > 15)) add("site", "contact.whatsapp", "WhatsApp number should be 8–15 digits including the country code");
     if (c.contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.contact.email)) add("site", "contact.email", "Email does not look valid");
+    if (c.site.inquiryEmail && !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(c.site.inquiryEmail)) add("site", "site.inquiryEmail", "Forward inquiries to must be one email address, like info@zehnox.com");
     SOCIAL_KEYS.forEach((k) => urlCheck("social", "social." + k, k.charAt(0).toUpperCase() + k.slice(1) + " URL"));
 
     c.team.forEach((m, i) => {

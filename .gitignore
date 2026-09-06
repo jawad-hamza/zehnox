@@ -1,0 +1,12 @@
+# Secrets: SMTP credentials live here, never in git.
+.env
+.env.*
+!.env.example
+
+# Leftovers from an interrupted write (see write-file.js)
+*.tmp
+
+# Local runtime noise
+node_modules/
+data/server.log
+data/*.corrupt
