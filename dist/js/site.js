@@ -120,7 +120,7 @@
       b.dataset.discipline = m.discipline || "";
       b.setAttribute("data-cursor", "View");
       b.innerHTML =
-        '<span class="member__avatar">' + (photo(m) ? '<img src="' + esc(photo(m)) + '" alt="">' : esc(initialsOf(m))) + "</span>" +
+        '<span class="member__avatar">' + (photo(m) ? '<img src="' + esc(photo(m)) + '" alt="" loading="lazy" decoding="async">' : esc(initialsOf(m))) + "</span>" +
         '<span><span class="member__name">' + esc(m.placeholder ? "[Insert team member]" : m.name) + '</span><span class="member__role">' + esc(m.role || "") + "</span></span>" +
         '<span class="member__disc">' + esc(m.discipline || "") + "</span>" +
         '<span class="member__more"><p>' + esc(m.placeholder ? "[Insert bio]" : (m.bio || "")) + "</p></span>";
@@ -140,14 +140,7 @@
         '<div class="stage__body"><span class="stage__role">' + esc(m.role || "") + '</span><h3 class="stage__name">' + esc(m.placeholder ? "[Insert name]" : m.name) + "</h3>" +
         '<p class="stage__bio">' + esc(m.placeholder ? "[Insert bio]" : (m.bio || "")) + "</p>" +
         '<p class="stage__quote">' + (m.quote ? "“" + esc(m.quote) + "”" : "") + "</p></div>";
-      /* The frame shows the portrait whole (object-fit: contain), so paint a blurred
-         copy of the same shot behind it: any aspect ratio fills the frame and no face
-         is ever cropped. */
-      const paint = () => {
-        stage.innerHTML = markup;
-        const frame = stage.querySelector(".stage__frame"), src = photo(m);
-        if (frame && src) frame.style.setProperty("--shot", 'url("' + String(src).replace(/["\\]/g, (ch) => "\\" + ch) + '")');
-      };
+      const paint = () => { stage.innerHTML = markup; };
       if (animate && hasGsap && !reduce) {
         gsap.to(stage, { opacity: 0, y: 8, duration: .2, ease: "power2.in", onComplete: () => { paint(); gsap.fromTo(stage, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .5, ease: "power3.out" }); } });
       } else paint();
@@ -218,12 +211,26 @@
   /* ---------- cursor ---------- */
   const cursor = document.querySelector(".cursor");
   if (!fine && cursor) cursor.remove();
-  if (fine && cursor && hasGsap) {
+  if (fine && cursor) {
     const label = cursor.querySelector(".cursor__label");
     const pos = { x: innerWidth / 2, y: innerHeight / 2 }, cur = { x: pos.x, y: pos.y };
-    const set = gsap.quickSetter(cursor, "css");
-    addEventListener("mousemove", (e) => { pos.x = e.clientX; pos.y = e.clientY; }, { passive: true });
-    gsap.ticker.add(() => { cur.x += (pos.x - cur.x) * 0.22; cur.y += (pos.y - cur.y) * 0.22; set({ x: cur.x, y: cur.y }); });
+    /* GSAP is a progressive enhancement here, not a requirement: without it the dot
+       still follows the pointer, it just runs off a plain rAF loop. */
+    const set = hasGsap ? gsap.quickSetter(cursor, "css")
+      : (p) => { cursor.style.transform = "translate3d(" + p.x + "px, " + p.y + "px, 0)"; };
+    let live = false;
+    addEventListener("mousemove", (e) => {
+      pos.x = e.clientX; pos.y = e.clientY;
+      if (live) return;
+      /* First move: we finally know where the pointer is, so snap the dot to it,
+         show it, and only now let the native cursor be hidden. */
+      live = true; cur.x = pos.x; cur.y = pos.y; set({ x: cur.x, y: cur.y });
+      cursor.classList.add("is-live");
+      document.documentElement.classList.add("has-cursor");
+    }, { passive: true });
+    const tick = () => { cur.x += (pos.x - cur.x) * 0.22; cur.y += (pos.y - cur.y) * 0.22; set({ x: cur.x, y: cur.y }); };
+    if (hasGsap) gsap.ticker.add(tick);
+    else (function loop() { tick(); requestAnimationFrame(loop); })();
     document.addEventListener("mouseover", (e) => {
       const el = e.target.closest("[data-cursor], a, button, h1, h2, .founder__quote, .stage__quote");
       cursor.classList.remove("is-hover", "is-label", "is-text");

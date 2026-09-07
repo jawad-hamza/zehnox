@@ -11,7 +11,8 @@
   const VERTICALS = ["AI Automation", "Creative Studio", "Web & Digital", "Software Solutions", "Training"];
   const SOCIAL_KEYS = ["instagram", "linkedin", "youtube", "facebook", "tiktok", "x"];
   const PANELS = ["site", "social", "team", "work", "insights", "legal", "inquiries", "account"];
-  const MAX_UPLOAD = 5 * 1024 * 1024;
+  const MAX_UPLOAD = 5 * 1024 * 1024;        // what the server stores — reached only by SVGs now
+  const MAX_SOURCE = 40 * 1024 * 1024;       // what we let the browser decode before cropping
 
   /* ---------- dom helpers ---------- */
   const $ = (sel, root) => (root || document).querySelector(sel);
@@ -221,7 +222,7 @@
         '<div class="item__body item__body--photo">' +
           '<div class="photo">' + photoFrame(m) +
             '<div class="photo__btns"><label class="btn btn--outline btn--sm">Upload photo<input type="file" accept="image/*" data-upload="' + p + 'photo"></label>' +
-            '<button class="btn btn--ghost btn--sm" type="button" data-act="clear-photo" data-list="team" data-index="' + i + '"' + (m.photo ? "" : " hidden") + '>Remove photo</button></div>' +
+            '<button class="btn btn--ghost btn--sm" type="button" data-act="clear-photo" data-list="team" data-index="' + i + '"' + (m.photo ? "" : " hidden") + '>Remove photo</button>'+'<p class="hint photo__hint">Cropped to 4:5 and compressed on upload, so every portrait matches.</p></div>' +
           "</div>" +
           '<div class="item__fields">' +
             '<label class="field"><span>Name</span><input type="text" data-path="' + p + 'name" value="' + attr(m.name) + '" placeholder="Leave empty to keep this slot as a placeholder"></label>' +
@@ -510,18 +511,51 @@
     } finally { setBusy(false); }
   }
 
+  const readDataUrl = (file) => new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error("Could not read the file"));
+    r.readAsDataURL(file);
+  });
+
   async function upload(input) {
     const file = input.files && input.files[0];
     const path = input.dataset.upload;
-    if (!file || !path) return;
-    if (!/^image\//.test(file.type)) { toast("Choose an image file (JPG, PNG, WebP, SVG).", "error"); input.value = ""; return; }
-    if (file.size > MAX_UPLOAD) { toast("Image is larger than 5 MB. Resize it first.", "error"); input.value = ""; return; }
+    const reset = () => { input.value = ""; };     // lets the same file be picked again after a cancel
+    if (!file || !path) return reset();
+    if (!/^image\//.test(file.type)) { reset(); toast("Choose an image file (JPG, PNG, WebP, SVG).", "error"); return; }
+    if (file.size > MAX_SOURCE) { reset(); toast("That file is over " + Math.round(MAX_SOURCE / 1048576) + " MB. Pick a smaller original.", "error"); return; }
+
+    /* Vectors have no pixels to crop or compress and are already tiny, so they go up as
+       they are. Everything else passes through the framing editor: that is what keeps
+       every portrait the same shape on the site and what shrinks a camera shot from
+       megabytes to a couple of hundred kilobytes before it ever leaves the browser. */
+    const vector = /^image\/svg/.test(file.type);
+    if (vector && file.size > MAX_UPLOAD) { reset(); toast("SVG files must be under 5 MB.", "error"); return; }
+    if (!vector && typeof ZXCrop === "undefined") { reset(); toast("The photo editor did not load. Reload the page and try again.", "error"); return; }
+
+    /* The input keeps hold of the file until every read of it is done — clearing it
+       first can revoke the blob out from under FileReader on some browsers. */
+    let name = file.name, dataUrl = "", note = "";
+    try {
+      if (vector) dataUrl = await readDataUrl(file);
+      else {
+        const shot = await ZXCrop.open(file);
+        if (!shot) return;                // cancelled in the editor
+        name = shot.name;
+        dataUrl = shot.dataUrl;
+        note = " — " + shot.width + "×" + shot.height + ", " + shot.label;
+      }
+    } catch (e) {
+      toast(e.message || "Could not read that image.", "error");
+      return;
+    } finally { reset(); }
+
     const card = input.closest(".item");
-    const dataUrl = await new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(new Error("Could not read the file")); r.readAsDataURL(file); });
     const frame = card && $(".photo__frame", card);
     if (frame) { frame.className = "photo__frame has-photo"; frame.innerHTML = '<img src="' + attr(dataUrl) + '" alt="">'; frame.style.opacity = ".5"; }
     try {
-      const res = await api("POST", "/api/upload", { name: file.name, dataUrl });
+      const res = await api("POST", "/api/upload", { name: name, dataUrl: dataUrl });
       const saved = res && (res.path || res.url || res.file);
       if (!saved) throw new Error("The server did not return a path");
       previews[saved] = dataUrl;
@@ -532,11 +566,11 @@
       if (clear) clear.hidden = false;
       if (frame) frame.style.opacity = "";
       updateDirty();
-      toast("Photo uploaded. Save to publish it.", "ok");
+      toast("Photo uploaded" + note + ". Save to publish it.", "ok");
     } catch (e) {
       if (frame) { const idx = +card.dataset.index; frame.outerHTML = photoFrame(content.team[idx]); }
       if (!e.auth) toast("Upload failed: " + e.message, "error");
-    } finally { input.value = ""; }
+    }
   }
 
   function addItem(list) {

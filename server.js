@@ -458,7 +458,15 @@ function serveFile(req, res, abs, status) {
   // js/content.js is rewritten by every admin save. Cached for an hour like the other .js files, edits stay
   // invisible on pages the browser has already seen, so it revalidates like the html does.
   const generated = path.normalize(abs) === path.join(DIST, "js", "content.js");
-  const cache = preset ? String(preset) : generated || ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".json" ? "no-cache" : "public, max-age=3600";
+  // Uploads get a fresh, never-reused filename (uniquePath) and font files carry their
+  // upstream version (…-latin.v25.woff2), so what lives at either URL can never change.
+  // A year-long cache is what stops a returning visitor re-downloading every portrait on
+  // the team page and every typeface on the site.
+  const versioned = ["uploads", "fonts"].indexOf(path.basename(path.dirname(abs))) !== -1;
+  const cache = preset ? String(preset)
+    : versioned ? "public, max-age=31536000, immutable"
+    : generated || ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".json" ? "no-cache"
+    : "public, max-age=3600";
   const headers = { "Content-Type": type, "Content-Length": st.size, "Cache-Control": cache, "X-Content-Type-Options": "nosniff", "Last-Modified": st.mtime.toUTCString() };
   if (ext === ".html") { headers["X-Frame-Options"] = "SAMEORIGIN"; headers["Referrer-Policy"] = "strict-origin-when-cross-origin"; }
   res.writeHead(status || 200, headers);

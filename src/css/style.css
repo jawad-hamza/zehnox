@@ -1,3 +1,76 @@
+/* Self-hosted webfonts. Downloaded from Google Fonts with tools/fetch-fonts.js and
+   served from this origin: a third-party stylesheet in front of the first paint cost
+   Lighthouse 1,710 ms. The version in each filename (…​.v25.woff2) is Google's, so a
+   file at a given URL never changes and the server caches it for a year.
+   Only the Latin subsets are kept; unicode-range means a browser downloads just the
+   ones the page actually needs. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(../fonts/archivo-400-600-latin-ext.v25.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 400 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(../fonts/archivo-400-600-latin.v25.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/fraunces-italic-300-700-latin-ext.v38.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/fraunces-italic-300-700-latin.v38.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/fraunces-300-700-latin-ext.v38.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url(../fonts/fraunces-300-700-latin.v38.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(../fonts/jetbrains-mono-500-latin-ext.v24.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(../fonts/jetbrains-mono-500-latin.v24.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* ZEHNOX — Concept B "Obsidian Editorial". Vanilla CSS. */
 :root {
   --obsidian: #0b0913;
@@ -48,8 +121,13 @@ em { font-style: italic; font-weight: 300; }
 .is-loading { overflow: hidden; }
 
 /* Cursor — difference blend */
-@media (hover: hover) and (pointer: fine) { body, a, button { cursor: none; } }
-.cursor { display: none; position: fixed; top: 0; left: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #fff; mix-blend-mode: difference; pointer-events: none; z-index: 9999; place-items: center; transition: width .4s var(--ease), height .4s var(--ease), margin .4s var(--ease), background-color .4s; }
+/* Only once site.js has the custom cursor following the pointer. Hiding the native
+   one at parse time left the page with no cursor at all while it loaded, and with
+   none ever if the animation library failed to arrive. */
+@media (hover: hover) and (pointer: fine) { .has-cursor body, .has-cursor a, .has-cursor button { cursor: none; } }
+.cursor { display: none; opacity: 0; position: fixed; top: 0; left: 0; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #fff; mix-blend-mode: difference; pointer-events: none; z-index: 9999; place-items: center; transition: width .4s var(--ease), height .4s var(--ease), margin .4s var(--ease), background-color .4s, opacity .25s; }
+/* Faded in on the first pointer move, which is the first moment we know where to put it. */
+.cursor.is-live { opacity: 1; }
 @media (hover: hover) and (pointer: fine) { .cursor { display: grid; } }
 .cursor__label { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #000; opacity: 0; transition: opacity .2s; white-space: nowrap; }
 .cursor.is-hover { width: 64px; height: 64px; margin: -32px 0 0 -32px; }
@@ -340,12 +418,15 @@ html:not(.js) .mk, .reduce .mk { fill-opacity: .16; }
 /* The frame height is capped against the viewport and its width is derived from
    that cap, so the portrait keeps its 4:5 ratio and never pushes the bio below
    the fold on a short laptop screen. */
-.stage__frame { --fh: min(46svh, 520px); position: relative; aspect-ratio: 4 / 5; width: min(100%, calc(var(--fh) * 4 / 5)); margin-right: auto; border-radius: 16px; overflow: hidden; isolation: isolate; background: rgba(1, 15, 79, .5); }
-/* The portrait is shown whole; a blurred copy of the same shot fills whatever
-   the aspect ratio leaves over, so no face is ever cropped. */
-.stage__frame::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--shot, none) center / cover no-repeat; filter: blur(28px) saturate(1.2); transform: scale(1.2); opacity: .5; }
-.stage__frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
-@media (max-height: 880px) { .stage__frame { --fh: min(50svh, 430px); aspect-ratio: 1 / 1; width: min(100%, var(--fh)); } }
+.stage__frame { --fh: min(46svh, 520px); position: relative; aspect-ratio: 4 / 5; width: min(100%, calc(var(--fh) * 4 / 5)); margin-right: auto; border-radius: 16px; overflow: hidden; background: rgba(1, 15, 79, .5); }
+/* Every uploaded portrait is cropped to this exact 4:5 frame in the admin, so the
+   photo fills it edge to edge and each person sits in an identically shaped card.
+   A photo set by hand to some other ratio is centre-cropped rather than floated. */
+.stage__frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A short screen only lowers the height cap. It must not change the ratio: the frame has
+   to stay the same 4:5 the admin crops to, or the photo gets cropped a second time here
+   and the site shows a tighter picture than the one that was framed. */
+@media (max-height: 880px) { .stage__frame { --fh: min(50svh, 430px); } }
 .stage__ph { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 10px; color: var(--lime); border: 1px dashed rgba(206, 253, 33, .6); border-radius: 16px; }
 .stage__initials { font-family: var(--display); font-style: italic; font-size: clamp(2.6rem, 3rem + 6svh, 6rem); line-height: 1; }
 .stage__tag { position: absolute; left: 16px; top: 16px; padding: 6px 12px; border-radius: 999px; background: rgba(11, 9, 19, .65); color: var(--lime); font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }

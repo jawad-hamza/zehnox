@@ -268,3 +268,49 @@ img { display: block; max-width: 100%; }
 .replybox input:focus, .replybox textarea:focus { outline: none; border-color: var(--lime); }
 .replybox__row { display: flex; gap: 8px; align-items: center; }
 .replybox__err { color: var(--danger); font-size: 0.8125rem; }
+
+/* ---------- photo cropper ---------- */
+.photo__hint { margin-top: 2px; font-size: 0.75rem; line-height: 1.5; }
+
+.crop { border: 0; padding: 0; background: transparent; max-width: none; max-height: none; width: 100%; height: 100%; overflow: hidden; }
+/* Only once open, or this would override the UA rule that keeps a closed dialog hidden. */
+.crop[open] { display: grid; place-items: center; }
+.crop::backdrop { background: rgba(6, 5, 12, .82); backdrop-filter: blur(3px); }
+.crop__panel {
+  width: min(94vw, 420px); margin: auto; display: grid; gap: 14px; padding: 20px;
+  background: var(--obsidian-2); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .6);
+}
+.crop__head { display: grid; gap: 6px; }
+.crop__head .hint { line-height: 1.5; }
+
+.crop__stage {
+  /* Height is capped through the width so the 4:5 ratio survives on a short screen:
+     a max-height here would squash the frame out of shape and the preview would stop
+     matching what actually gets exported. */
+  position: relative; aspect-ratio: 4 / 5; width: min(100%, calc(56svh * 4 / 5)); margin-inline: auto;
+  border-radius: 10px; overflow: hidden; background: #05040a; cursor: grab;
+  touch-action: none;                       /* the canvas handles pan and pinch itself */
+  -webkit-user-select: none; user-select: none;
+}
+.crop__stage:active { cursor: grabbing; }
+.crop__canvas { display: block; width: 100%; height: 100%; }
+
+/* Rule-of-thirds guides, drawn over the canvas so they never end up in the exported file. */
+.crop__grid { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(206, 253, 33, .55); border-radius: 10px; }
+.crop__grid::before, .crop__grid::after { content: ""; position: absolute; inset: 0; }
+.crop__grid::before { background: linear-gradient(to right, transparent calc(33.333% - .5px), rgba(242, 244, 245, .28) calc(33.333% - .5px) calc(33.333% + .5px), transparent calc(33.333% + .5px), transparent calc(66.667% - .5px), rgba(242, 244, 245, .28) calc(66.667% - .5px) calc(66.667% + .5px), transparent calc(66.667% + .5px)); }
+.crop__grid::after { background: linear-gradient(to bottom, transparent calc(33.333% - .5px), rgba(242, 244, 245, .28) calc(33.333% - .5px) calc(33.333% + .5px), transparent calc(33.333% + .5px), transparent calc(66.667% - .5px), rgba(242, 244, 245, .28) calc(66.667% - .5px) calc(66.667% + .5px), transparent calc(66.667% + .5px)); }
+
+.crop__zoom { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; color: var(--muted); }
+.crop__zoom input { width: 100%; accent-color: var(--lime); height: 22px; }
+
+.crop__foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.crop__meta { color: var(--muted); letter-spacing: .08em; }
+.crop__meta.is-warn { color: #ffc46b; }
+.crop__btns { display: flex; gap: 8px; margin-left: auto; }
+
+@media (max-height: 720px) {
+  .crop__panel { padding: 14px; gap: 10px; }
+  .crop__head .hint { display: none; }
+}
