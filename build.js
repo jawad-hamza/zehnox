@@ -3,6 +3,7 @@
    - copies src/ to dist/ (skips _templates/)
    - regenerates src/js/content.js AND dist/js/content.js from content.json (window.CONTENT)
    - expands src/_templates/post.html once per post into dist/insights/<slug>.html
+   - injects the Google Analytics tag into every html page on its way into dist/
    - writes dist/sitemap.xml (every html page, using site.url) and dist/robots.txt
    - idempotent: files in dist/ that this build did not produce are deleted
    Node built-ins only. Usage: node build.js   |   const { build } = require("./build"); build();
@@ -82,6 +83,47 @@ function contentJs(content) {
   return CONTENT_JS_HEADER + "\nwindow.CONTENT = " + json + ";\n";
 }
 
+/* ---------- analytics ----------
+   Google Analytics 4. The tag lives here, in one place, instead of being pasted into
+   twenty-odd src/*.html heads: every page that reaches dist/ picks it up on the way
+   through makeWriter, including the insight pages expanded from the post template.
+   The admin panel is served straight out of admin/ by server.js and never passes through
+   this build, so it stays untagged by construction.
+   Set GA_MEASUREMENT_ID="" in the environment to build an untagged copy of the site. */
+const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID !== undefined
+  ? process.env.GA_MEASUREMENT_ID.trim()
+  : "G-5FYXZZP8N1";
+
+const isHtml = (rel) => /\.html?$/i.test(rel);
+
+function analyticsTag(nl) {
+  return [
+    "<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->",
+    '<script async src="https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID + '"></script>',
+    "<script>",
+    "  window.dataLayer = window.dataLayer || [];",
+    "  function gtag(){dataLayer.push(arguments);}",
+    "  gtag('js', new Date());",
+    "",
+    "  gtag('config', '" + GA_MEASUREMENT_ID + "');",
+    "</script>",
+  ].join(nl);
+}
+
+function withAnalytics(html, rel) {
+  if (!GA_MEASUREMENT_ID) return html;
+  if (html.indexOf("googletagmanager.com") !== -1) return html;   // already tagged; never double up
+  const nl = html.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
+  /* Google asks for the tag as high in <head> as possible, but <meta charset> has to stay
+     first — a browser only looks for the encoding in the opening bytes of the document. */
+  const charset = /<meta[^>]+charset=[^>]*>/i.exec(html);
+  const head = /<head[^>]*>/i.exec(html);
+  const anchor = charset || head;
+  if (!anchor) throw new Error(rel + ": no <head> to put the analytics tag in");
+  const at = anchor.index + anchor[0].length;
+  return html.slice(0, at) + nl + analyticsTag(nl) + html.slice(at);
+}
+
 /* ---------- output tracking (so stale files can be removed) ---------- */
 function makeWriter(written) {
   const ensureDir = (dir) => fs.mkdirSync(dir, { recursive: true });
@@ -89,13 +131,16 @@ function makeWriter(written) {
     write(rel, data) {
       const abs = path.join(DIST, rel);
       ensureDir(path.dirname(abs));
-      fs.writeFileSync(abs, data);
+      fs.writeFileSync(abs, isHtml(rel) ? withAnalytics(String(data), rel) : data);
       written.add(path.normalize(rel));
     },
+    /* Pages are read, tagged and written rather than copied byte for byte; everything
+       else (css, js, fonts, uploads, svg) still takes the plain copy path. */
     copy(srcAbs, rel) {
       const abs = path.join(DIST, rel);
       ensureDir(path.dirname(abs));
-      fs.copyFileSync(srcAbs, abs);
+      if (isHtml(rel)) fs.writeFileSync(abs, withAnalytics(fs.readFileSync(srcAbs, "utf8"), rel));
+      else fs.copyFileSync(srcAbs, abs);
       written.add(path.normalize(rel));
     }
   };

@@ -683,7 +683,12 @@ a.tilecard:hover { border-color: rgba(242, 244, 245, .4); transform: translateY(
 .chip.is-active { background: var(--lime); color: var(--ink); border-color: var(--lime); }
 .sec--light .chip { border-color: var(--line-light); color: var(--muted-light); }
 .sec--light .chip:hover { color: var(--ink); border-color: var(--ink); }
-.sec--light .chip.is-active { color: var(--ink); }
+/* A merely light-tinted section keeps the lime active chip, so its label has to be dark.
+   The full .light theme is a different thing: it repaints the chip ink-on-paper (see
+   .light .chip.is-active above). Both selectors weigh the same, and this one sits later
+   in the file, so on /work — <section class="sec sec--light light"> — it was painting the
+   label black on the black pill. Excluding .light lets the theme rule win. */
+.sec--light:not(.light) .chip.is-active { color: var(--ink); }
 
 /* Related links strip */
 .related { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
