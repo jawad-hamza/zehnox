@@ -24,8 +24,87 @@ jobs:
             git reset --hard origin/main
 
             cd /opt/zehnox
+
+            echo "Saving currently running image for rollback..."
+            CURRENT_IMAGE=$(docker inspect --format='{{.Image}}' zehnox 2>/dev/null || true)
+
+            if [ -n "$CURRENT_IMAGE" ]; then
+              docker tag "$CURRENT_IMAGE" zehnox-rollback:previous
+            fi
+
+            echo "Building new image..."
             docker compose build
+
+            echo "Starting new container..."
             docker compose up -d
 
-            sleep 5
-            curl -f http://127.0.0.1:3000/
+            echo "Waiting for ZEHNOX container to become healthy..."
+            DEPLOY_OK=0
+
+            for i in $(seq 1 30); do
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' zehnox 2>/dev/null || echo "missing")
+
+              echo "Health status: $STATUS"
+
+              if [ "$STATUS" = "healthy" ]; then
+                DEPLOY_OK=1
+                break
+              fi
+
+              if [ "$STATUS" = "unhealthy" ]; then
+                break
+              fi
+
+              sleep 2
+            done
+
+            if [ "$DEPLOY_OK" = "1" ]; then
+              echo "Deployment successful."
+              exit 0
+            fi
+
+            echo "Deployment failed."
+            echo "Recent container logs:"
+            docker logs --tail 100 zehnox || true
+
+            if ! docker image inspect zehnox-rollback:previous >/dev/null 2>&1; then
+              echo "No rollback image is available."
+              exit 1
+            fi
+
+            echo "Rolling back to previous image..."
+
+            docker tag zehnox-rollback:previous zehnox-zehnox:latest
+
+            docker compose up -d \
+              --no-build \
+              --force-recreate
+
+            echo "Waiting for rollback container to become healthy..."
+            ROLLBACK_OK=0
+
+            for i in $(seq 1 30); do
+              STATUS=$(docker inspect --format='{{.State.Health.Status}}' zehnox 2>/dev/null || echo "missing")
+
+              echo "Rollback health status: $STATUS"
+
+              if [ "$STATUS" = "healthy" ]; then
+                ROLLBACK_OK=1
+                break
+              fi
+
+              if [ "$STATUS" = "unhealthy" ]; then
+                break
+              fi
+
+              sleep 2
+            done
+
+            if [ "$ROLLBACK_OK" = "1" ]; then
+              echo "Rollback succeeded. Previous version is running."
+            else
+              echo "Rollback failed to become healthy."
+              docker logs --tail 100 zehnox || true
+            fi
+
+            exit 1
