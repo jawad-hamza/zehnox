@@ -11,4 +11,4 @@ ENV TRUST_PROXY=1
 
 EXPOSE 3000
 
-CMD ["node", "server.js", "3000"]
+CMD ["./docker-entrypoint.sh"]
