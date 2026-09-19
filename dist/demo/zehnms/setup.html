@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FYXZZP8N1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5FYXZZP8N1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up the shop · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-auth">
+<main class="auth auth-wide">
+<div class="auth-brand"><span class="k-brand-mark" aria-hidden="true">Z</span>ZehnMS</div>
+<ol class="steps" style="list-style:none;padding:0;margin:0 0 20px">
+<li class="step is-done"><b><i class="bi bi-check-lg" aria-hidden="true"></i></b>Owner account</li>
+<li class="step is-on"><b>2</b>Shop details</li>
+</ol>
+
+<section class="auth-card">
+<div class="card-head"><h1 style="font-size:1.125rem">1. Owner account</h1><span class="badge badge-green">Done</span></div>
+<p class="auth-lead" style="margin-bottom:18px">The first login. It can do everything and add cashiers later.</p>
+<div class="form-grid">
+<div class="field"><label class="field-label">Full name</label><input class="input" value="Kamran Aslam"></div>
+<div class="field"><label class="field-label">Email</label><input class="input" value="owner@alnoor.example"></div>
+<div class="field"><label class="field-label">Password</label><input class="input" type="password" value="dummy-password"></div>
+<div class="field"><label class="field-label">Password again</label><input class="input" type="password" value="dummy-password"></div>
+</div>
+</section>
+
+<form class="auth-card" data-next="dashboard.html">
+<div class="card-head"><h1 style="font-size:1.125rem">2. Shop details</h1><span class="badge badge-blue">Now</span></div>
+<p class="auth-lead" style="margin-bottom:18px">Printed on receipts and invoices. Change any of it later in Settings.</p>
+<div class="form-grid">
+<div class="field span-2"><label class="field-label">Shop name <span class="req">*</span></label><input class="input is-focus" value="Al-Noor General Store"></div>
+<div class="field span-2"><label class="field-label">Address</label><input class="input" value="Shop 12, Main Bazaar, Lahore"></div>
+<div class="field"><label class="field-label">Phone</label><input class="input" value="0300-0000000"></div>
+<div class="field"><label class="field-label">Currency <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Shown before every amount. Tax label and rates are separate settings.</span></span></label><select class="select"><option>Rs (Pakistani rupee)</option></select></div>
+<div class="field"><label class="field-label">Time zone</label><select class="select"><option>Asia/Karachi (UTC+5)</option></select></div>
+<div class="field"><label class="field-label">Receipt paper <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>The width of the thermal roll in your receipt printer.</span></span></label><select class="select"><option>80 mm roll</option><option>58 mm roll</option><option>A4 sheet</option></select></div>
+</div>
+<div class="row mt-5" style="justify-content:space-between">
+<a href="login.html" class="btn">Back</a>
+<button type="submit" class="btn btn-primary">Finish and open the shop</button>
+</div>
+</form>
+<p class="soft small mt-4" style="text-align:center"><a href="index.html">All prototype screens</a></p>
+</main>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

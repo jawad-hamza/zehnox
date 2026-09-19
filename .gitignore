@@ -10,3 +10,6 @@
 node_modules/
 data/server.log
 data/*.corrupt
+
+# Product installers are served from the VPS (/opt/zehnox/persistent/downloads), never from git.
+/downloads/

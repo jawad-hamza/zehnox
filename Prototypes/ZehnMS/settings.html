@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app " data-module="settings">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Settings</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Shop details, which features are switched on, the team, backups and the licence.</span></span></div>
+<div class="k-head-actions"></div>
+<div class="k-head-tools"><div class="k-goto" role="search"><i class="bi bi-search" aria-hidden="true"></i><input type="search" class="k-goto-input" placeholder="Go to" aria-label="Go to a module or page"><kbd class="k-key">Ctrl K</kbd></div>
+<a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="k-page">
+<div class="settings">
+<nav class="set-index" aria-label="Settings sections">
+<a href="#features" class="">Business<small></small></a>
+<a href="#features" class="">Tax and till<small></small></a>
+<a href="#features" class="is-on">Features<small>12/13</small></a>
+<a href="#features" class="">Team and roles<small>2</small></a>
+<a href="#features" class="">Bank accounts<small>1</small></a>
+<a href="#features" class="">Backups<small>3</small></a>
+<a href="#features" class="">Audit trail<small>14</small></a>
+<a href="#features" class="">Time zone<small></small></a>
+<a href="#licence" class="">Licence and billing<small></small></a>
+</nav>
+<div>
+<div id="features">
+<h2 style="font-size:1.125rem">Features</h2>
+<p class="soft small" style="margin:2px 0 16px">Standard edition <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Your licence sets which features this install can use. Inside that you switch features on and off here.</span></span> · 12 of 13 switched on</p>
+<div class="stack">
+<section class="panel"><div class="panel-head"><h3 class="panel-title">Back office</h3></div><div class="feature"><i class="bi bi-box-seam" aria-hidden="true"></i><div class="feature-text"><strong>Purchases</strong><span>Record supplier bills so stock and cost update themselves.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Purchases"></span></div>
+<div class="feature"><i class="bi bi-clipboard-check" aria-hidden="true"></i><div class="feature-text"><strong>Stock control</strong><span>Stock adjustments, stock take and opening stock corrections.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Stock control"></span></div>
+<div class="feature"><i class="bi bi-people" aria-hidden="true"></i><div class="feature-text"><strong>Customers and suppliers</strong><span>Party lists, statements, settlements and selling on credit.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Customers and suppliers"></span></div>
+<div class="feature"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i><div class="feature-text"><strong>Returns</strong><span>Take goods back from a customer or send them back to a supplier.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Returns"></span></div>
+<div class="feature"><i class="bi bi-graph-up" aria-hidden="true"></i><div class="feature-text"><strong>Reports</strong><span>Sales, stock and team reports with CSV export.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Reports"></span></div></section>
+<section class="panel"><div class="panel-head"><h3 class="panel-title">Money</h3></div><div class="feature"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><div class="feature-text"><strong>Expenses</strong><span>Rent, wages, utilities and other bills, paid or unpaid.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Expenses"></span></div>
+<div class="feature"><i class="bi bi-journal-text" aria-hidden="true"></i><div class="feature-text"><strong>Accounts</strong><span>Ledgers, money desk, trial balance, profit and loss, balance sheet.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Accounts"></span></div>
+<div class="feature"><i class="bi bi-percent" aria-hidden="true"></i><div class="feature-text"><strong>Tax</strong><span>Charge GST, VAT or sales tax on sales.</span></div><span class="switch" role="switch" tabindex="0" aria-checked="false" aria-label="Tax"></span></div></section>
+<section class="panel"><div class="panel-head"><h3 class="panel-title">Products</h3></div><div class="feature is-locked"><i class="bi bi-hourglass-split" aria-hidden="true"></i><div class="feature-text"><strong>Expiry tracking <span class="badge"><i class="bi bi-lock" aria-hidden="true"></i>Not in your edition</span></strong><span>Expiry dates on products and purchases with early warnings.</span></div><span class="switch locked" role="switch" aria-checked="false" aria-disabled="true" aria-label="Expiry tracking"></span></div>
+<div class="feature"><i class="bi bi-speedometer" aria-hidden="true"></i><div class="feature-text"><strong>Weights and measures</strong><span>Sell by kg, gram, litre, metre or foot in fractions.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Weights and measures"></span></div>
+<div class="feature"><i class="bi bi-calculator" aria-hidden="true"></i><div class="feature-text"><strong>Markup pricing</strong><span>Set the sale price as cost plus a percentage or a fixed amount.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Markup pricing"></span></div>
+<div class="feature"><i class="bi bi-collection" aria-hidden="true"></i><div class="feature-text"><strong>Sizes and variants</strong><span>Sell one item in several sizes, each with its own price and stock.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Sizes and variants"></span></div>
+<div class="feature is-locked"><i class="bi bi-filetype-csv" aria-hidden="true"></i><div class="feature-text"><strong>Catalogue import and export <span class="badge"><i class="bi bi-lock" aria-hidden="true"></i>Not in your edition</span></strong><span>Load or download the product list as a CSV file.</span></div><span class="switch locked" role="switch" aria-checked="false" aria-disabled="true" aria-label="Catalogue import and export"></span></div></section>
+<section class="panel"><div class="panel-head"><h3 class="panel-title">Till</h3></div><div class="feature"><i class="bi bi-tag" aria-hidden="true"></i><div class="feature-text"><strong>Price override and line discounts</strong><span>Let the cashier change a price or discount one line at the till.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Price override and line discounts"></span></div>
+<div class="feature"><i class="bi bi-pause-circle" aria-hidden="true"></i><div class="feature-text"><strong>Hold and resume sale</strong><span>Park a sale and serve the next customer.</span></div><span class="switch on" role="switch" tabindex="0" aria-checked="true" aria-label="Hold and resume sale"></span></div></section>
+</div>
+<div class="row mt-4"><button type="button" class="btn btn-primary">Save features</button><span class="soft small">Menus change as soon as you save.</span></div>
+</div>
+
+<div id="licence" style="margin-top:40px">
+<h2 style="font-size:1.125rem;margin-bottom:16px">Licence and billing</h2>
+<section class="panel">
+<div class="panel-head"><h3 class="panel-title">Licence</h3><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>After the trial, paste a licence key to keep selling. Your data stays on this computer either way.</span></span><span class="spacer"></span><span class="badge badge-amber">Trial: 7 days left</span></div>
+<dl class="dl">
+<dt>Status</dt><dd>Trial, ends 26 Sep 2026</dd>
+<dt>Edition</dt><dd>Standard</dd>
+<dt>This computer</dt><dd class="licence-key">PC-ID 0000-DEMO-0000</dd>
+<dt>Shop</dt><dd>Al-Noor General Store</dd>
+</dl>
+<div class="field mt-5"><label class="field-label" for="key">Licence key</label>
+<textarea class="input licence-key" id="key" rows="3" placeholder="Paste the licence key you received, e.g. ZEHN-XXXX-XXXX-XXXX-XXXX"></textarea></div>
+<div class="row mt-3"><button type="button" class="btn btn-primary">Activate</button><span class="soft small">Works offline. The key is checked on this computer.</span></div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

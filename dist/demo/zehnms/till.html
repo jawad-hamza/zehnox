@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FYXZZP8N1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5FYXZZP8N1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Till · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app k-till" data-module="till">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Till</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Scan or type to add items. Change a quantity, rate or discount right in the bill. F9, F10 and F11 pick how the customer pays.</span></span></div>
+<div class="k-head-actions"><div class="scan">
+<i class="bi bi-upc-scan" aria-hidden="true"></i>
+<input class="scan-input is-focus" id="scanInput" value="bread" aria-label="Scan, or type a name or code" placeholder="Scan, or type a name or code">
+<kbd class="k-key">F2</kbd>
+<div class="picker" id="sizePicker" hidden>
+<div class="picker-head"><strong>Bread: pick a size</strong><span>1-3, or arrows and Enter. Esc closes.</span></div>
+<div class="picker-item is-on"><span class="k-key">1</span><span><b>Small</b><span class="code">AN-BREAD-S</span></span><span class="stock">2 pcs</span><span class="price">Rs 80.00</span></div>
+<div class="picker-item"><span class="k-key">2</span><span><b>Medium</b><span class="code">AN-BREAD-M</span></span><span class="stock">25 pcs</span><span class="price">Rs 110.00</span></div>
+<div class="picker-item"><span class="k-key">3</span><span><b>Large</b><span class="code">AN-BREAD-L</span></span><span class="stock">40 pcs</span><span class="price">Rs 140.00</span></div>
+</div>
+</div>
+<button type="button" class="btn btn-sm" data-toggle="sizePicker"><i class="bi bi-collection" aria-hidden="true"></i>Show size picker</button></div>
+<div class="k-head-tools"><a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="k-page k-page--fixed">
+<div class="till">
+<section class="panel bill" aria-label="The bill">
+<div class="bill-scroll">
+<table class="k-table">
+<thead><tr><th>#</th><th>Item</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Disc %</th><th class="num">Amount</th><th><span class="sr-only">Remove</span></th></tr></thead>
+<tbody>
+<tr><td>1</td><td><span class="item-name">Atta (loose)</span><span class="sub">86.500 kg in stock</span></td><td class="num"><input class="cell-input" value="0.500" aria-label="Quantity"><span class="cell-unit">kg</span></td><td class="num"><input class="cell-input wide" value="140.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 70.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td>2</td><td><span class="item-name">Bread - Large</span><span class="sub">40 pcs in stock</span></td><td class="num"><input class="cell-input" value="1" aria-label="Quantity"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="140.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 140.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td>3</td><td><span class="item-name">Basmati rice 5 kg</span><span class="sub">3 pcs in stock</span></td><td class="num"><input class="cell-input" value="1" aria-label="Quantity"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="1,450.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 1,450.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td>4</td><td><span class="item-name">Cooking oil 1 L</span><span class="sub">48 pcs in stock</span></td><td class="num"><input class="cell-input" value="2" aria-label="Quantity"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="560.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 1,120.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td>5</td><td><span class="item-name">Sugar 1 kg</span><span class="sub">120 pcs in stock</span></td><td class="num"><input class="cell-input" value="2" aria-label="Quantity"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="155.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 310.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr class="is-selected"><td>6</td><td><span class="item-name">Milk pack 1 L</span><span class="sub">36 pcs in stock</span></td><td class="num"><input class="cell-input" value="3" aria-label="Quantity"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="230.00" aria-label="Rate"></td><td class="num"><input class="cell-input" value="0.00" aria-label="Discount percent"></td><td class="num amount">Rs 690.00</td><td><button type="button" class="btn-icon btn" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+</tbody>
+</table>
+</div>
+<div class="bill-foot">
+<span class="soft">6 lines on this bill</span><span class="spacer"></span>
+<button type="button" class="btn btn-sm">Qty <kbd class="k-key">F4</kbd></button>
+<button type="button" class="btn btn-sm">Disc <kbd class="k-key">F6</kbd></button>
+<button type="button" class="btn btn-sm">Remove <kbd class="k-key">Del</kbd></button>
+<button type="button" class="btn btn-sm">List <kbd class="k-key">F3</kbd></button>
+</div>
+<div class="bill-foot">
+<span class="spacer"></span>
+<input class="input" style="max-width:220px;height:32px" placeholder="Name for this bill (optional)" aria-label="Name for this bill">
+<button type="button" class="btn btn-sm"><i class="bi bi-pause-circle" aria-hidden="true"></i>Hold <kbd class="k-key">F8</kbd></button>
+</div>
+</section>
+
+<section class="panel pay" aria-label="Payment">
+<p class="total-label">Total Rs</p>
+<p class="total-fig">3,780.00</p>
+<div class="pay-lines">
+<div class="pay-line"><span>Subtotal</span><b>Rs 3,780.00</b></div>
+<div class="pay-line"><span>Bill discount</span><span class="row" style="gap:6px"><input class="cell-input" value="0.00" aria-label="Bill discount percent">%</span><b>Rs 0.00</b></div>
+<div class="pay-line"><span>Tax</span><b class="soft" style="font-weight:500">Off</b></div>
+</div>
+<div class="pay-block">
+<div class="field-label">Customer <kbd class="k-key">F7</kbd><a href="customers.html" class="end" style="margin-left:auto">New customer</a></div>
+<select class="select mt-2" aria-label="Customer"><option>Walk-in customer</option><option>Bilal Traders</option><option>Ayesha Khan</option><option>Usman Ahmed</option></select>
+</div>
+<div class="segmented pay-block" role="group" aria-label="Payment method">
+<button type="button" class="is-on" aria-pressed="true" data-pay-label="Take cash">Cash <kbd class="k-key">F9</kbd></button>
+<button type="button" aria-pressed="false" data-pay-label="Take bank payment">Bank <kbd class="k-key">F10</kbd></button>
+<button type="button" aria-pressed="false" data-pay-label="Put on credit">Credit <kbd class="k-key">F11</kbd></button>
+</div>
+<div class="pay-block tender-row">
+<div class="field"><label class="field-label" for="tendered">Tendered</label><input class="input num" id="tendered" value="4,000.00" style="font-size:1.125rem;height:44px"></div>
+<div><p class="soft small" style="text-align:right">Change</p><p class="change-fig">Rs 220.00</p></div>
+</div>
+<a href="receipt.html" class="btn btn-primary pay-btn"><span id="payLabel">Take cash</span> <kbd class="k-key">Enter</kbd></a>
+<div class="pay-bottom"><button type="button" class="btn btn-quiet btn-sm">Clear this bill</button></div>
+</section>
+</div>
+<script>if (location.hash === "#picker") { document.getElementById("sizePicker").hidden = false; }</script>
+
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

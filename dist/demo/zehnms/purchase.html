@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FYXZZP8N1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5FYXZZP8N1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Purchase bill PUR-00045 · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app " data-module="purchases">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Purchase bill PUR-00045</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Record what a supplier delivered and billed.</span></span></div>
+<div class="k-head-actions"><button type="button" class="btn btn-primary"><i class="bi bi-check-lg" aria-hidden="true"></i>Save bill</button>
+<a href="customers.html" class="btn">Suppliers</a></div>
+<div class="k-head-tools"><div class="k-goto" role="search"><i class="bi bi-search" aria-hidden="true"></i><input type="search" class="k-goto-input" placeholder="Go to" aria-label="Go to a module or page"><kbd class="k-key">Ctrl K</kbd></div>
+<a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="k-page">
+<div class="grid grid-main-side">
+<div class="stack">
+<section class="panel">
+<div class="panel-head"><h2 class="panel-title">Supplier bill</h2><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>What the supplier billed you. Saving adds the stock and records what you still owe.</span></span><span class="spacer"></span><span class="badge badge-amber">Part paid</span></div>
+<div class="form-grid form-grid-3">
+<div class="field"><label class="field-label">Supplier</label><select class="select"><option>Punjab Flour Mills</option><option>City Distributors</option></select></div>
+<div class="field"><label class="field-label">Supplier bill no.</label><input class="input" value="PFM-7781"></div>
+<div class="field"><label class="field-label">Date</label><div class="input-icon end"><input class="input" value="18/09/2026"><i class="bi bi-calendar3" aria-hidden="true"></i></div></div>
+</div>
+</section>
+<section class="panel panel--flush">
+<div class="panel-head"><h2 class="panel-title">Lines</h2><span class="panel-note">3 lines</span><span class="spacer"></span><button type="button" class="btn btn-sm"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add line</button></div>
+<div class="table-wrap">
+<table class="k-table">
+<thead><tr><th>#</th><th>Product</th><th class="num">Qty</th><th class="num">Cost each</th><th class="num">Amount</th><th><span class="sr-only">Remove</span></th></tr></thead>
+<tbody>
+<tr><td class="soft">1</td><td>Atta Chakki Fresh 10 kg</td><td class="num"><input class="cell-input" value="20"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="1,180.00"></td><td class="num strong">23,600.00</td><td><button type="button" class="btn btn-icon" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td class="soft">2</td><td>Atta (loose)</td><td class="num"><input class="cell-input" value="50.000"><span class="cell-unit">kg</span></td><td class="num"><input class="cell-input wide" value="118.00"></td><td class="num strong">5,900.00</td><td><button type="button" class="btn btn-icon" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+<tr><td class="soft">3</td><td>Suji 1 kg</td><td class="num"><input class="cell-input" value="30"><span class="cell-unit">pcs</span></td><td class="num"><input class="cell-input wide" value="150.00"></td><td class="num strong">4,500.00</td><td><button type="button" class="btn btn-icon" aria-label="Remove line"><i class="bi bi-x-lg" aria-hidden="true"></i></button></td></tr>
+</tbody>
+<tfoot><tr><td></td><td>Subtotal</td><td></td><td></td><td class="num">34,000.00</td><td></td></tr></tfoot>
+</table>
+</div>
+</section>
+</div>
+<section class="panel">
+<div class="panel-head"><h2 class="panel-title">Totals</h2><span class="spacer"></span><span class="panel-note">Our ref PUR-00045</span></div>
+<div class="kv"><span>Subtotal</span><span>Rs 34,000.00</span></div>
+<div class="kv"><span>Discount</span><span>- Rs 500.00</span></div>
+<div class="kv"><span>Freight</span><span>+ Rs 300.00</span></div>
+<div class="kv" style="border-top-color:var(--k-border-strong)"><span class="strong">Bill total</span><span style="font-size:1.375rem">Rs 33,800.00</span></div>
+<div class="field mt-4"><label class="field-label">Paid now from</label><select class="select"><option>Cash in till</option><option>Bank account</option></select></div>
+<div class="field mt-3"><label class="field-label">Amount paid</label><input class="input num" value="20,000.00"></div>
+<div class="kv mt-4"><span>Still owed to supplier</span><span class="out">Rs 13,800.00</span></div>
+<p class="soft small mt-3">Stock and average cost update when the bill is saved.</p>
+</section>
+</div>
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

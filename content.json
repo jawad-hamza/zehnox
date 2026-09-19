@@ -83,6 +83,17 @@
       "url": "/zehnbot"
     },
     {
+      "slug": "zehnms",
+      "title": "ZehnMS — the ZEHNOX Management System for shops",
+      "vertical": "Software Solutions",
+      "year": "2026",
+      "summary": "A ZEHNOX product, designed and engineered in-house: point of sale, stock and accounts for a shop in one system. A fast till with weighed and sized items, purchases and supplier bills, customer ledgers, and reports down to a trial balance.",
+      "tags": [
+        "Product"
+      ],
+      "url": "/zehnms"
+    },
+    {
       "slug": "zehnox-com",
       "title": "zehnox.com — this site",
       "vertical": "Web & Digital",

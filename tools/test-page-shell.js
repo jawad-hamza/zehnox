@@ -209,6 +209,41 @@ test("no source page hardcodes the tag — it comes from the build", () => {
   }
 });
 
+/* ---------- ZehnBot chat widget ---------- */
+const WIDGET = "https://bot.zehnox.com/static/widget.js?client_id=zehnox-db881c";
+const isDemo = (file) => path.relative(DIST, file).split(path.sep)[0] === "demo";
+
+test("every public page loads the ZehnBot widget once, async, at the end of the body", () => {
+  const built = pages(DIST, []).filter((f) => !isDemo(f));
+  assert.ok(built.length > 20, "expected the built site, found " + built.length + " page(s)");
+  for (const file of built) {
+    const html = fs.readFileSync(file, "utf8");
+    const rel = path.relative(ROOT, file);
+    const tags = html.match(/<script[^>]*bot\.zehnox\.com\/static\/widget\.js[^>]*><\/script>/g) || [];
+    assert.strictEqual(tags.length, 1, rel + ": found " + tags.length + " widget tags, expected exactly 1");
+    assert.ok(tags[0].includes('src="' + WIDGET.replace(/&/g, "&amp;") + '"'), rel + ": wrong widget url or client_id — " + tags[0]);
+    // defer would hold back DOMContentLoaded until bot.zehnox.com answers; async never does.
+    assert.ok(/\sasync[\s>]/.test(tags[0]) && !/\sdefer[\s>]/.test(tags[0]), rel + ": the widget must load async, not defer");
+    assert.ok(html.indexOf(tags[0]) > html.search(/<\/footer>|<\/main>/i), rel + ": the widget is not at the end of the body");
+  }
+});
+
+test("the widget stays off the product demos and the admin panel", () => {
+  for (const file of pages(DIST, []).filter(isDemo)) {
+    assert.ok(!fs.readFileSync(file, "utf8").includes("widget.js"), path.relative(ROOT, file) + ": the chat launcher would cover the demo's own UI");
+  }
+  for (const name of fs.readdirSync(path.join(ROOT, "admin"))) {
+    assert.ok(!fs.readFileSync(path.join(ROOT, "admin", name), "utf8").includes("bot.zehnox.com"), "admin/" + name + " loads the chat widget");
+  }
+});
+
+test("no source page hardcodes the widget — it comes from the build", () => {
+  for (const file of pages(path.join(ROOT, "src"), [])) {
+    assert.ok(!fs.readFileSync(file, "utf8").includes("bot.zehnox.com/static/widget.js"),
+      path.relative(ROOT, file) + ": hardcoded widget tag would double up with the injected one");
+  }
+});
+
 test("the admin panel is never tagged", () => {
   for (const name of fs.readdirSync(path.join(ROOT, "admin"))) {
     const body = fs.readFileSync(path.join(ROOT, "admin", name), "utf8");

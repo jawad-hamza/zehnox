@@ -26,6 +26,10 @@ const ADMIN = path.join(ROOT, "admin");
 const SRC = path.join(ROOT, "src");
 const DATA = path.join(ROOT, "data");
 const UPLOADS = path.join(SRC, "uploads");
+/* Product installers live on the server, not in git: on the VPS the persistent
+   /opt/zehnox/persistent/downloads folder is mounted here, so shipping a new build is one
+   file copy — no commit, no deploy, no 50 MB binary in the repo's history forever. */
+const DOWNLOADS = path.resolve(process.env.DOWNLOADS_DIR || path.join(ROOT, "downloads"));
 const CONTENT_FILE = path.join(ROOT, "content.json");
 const TOKEN_FILE = path.join(DATA, "admin-token.txt");
 const INQUIRIES_FILE = path.join(DATA, "inquiries.json");
@@ -446,6 +450,24 @@ function resolveStatic(baseDir, urlPath) {
   return abs;
 }
 
+/* The newest "<product>-Setup-<version>.exe" in DOWNLOADS, compared as version numbers so
+   1.10.0 beats 1.9.0. Null when there is none (or no downloads folder at all). */
+function newestInstaller(product) {
+  let names;
+  try { names = fs.readdirSync(DOWNLOADS); } catch (_) { return null; }
+  const re = new RegExp("^" + product + "-setup-(\\d+(?:\\.\\d+){0,3})\\.exe$", "i");
+  let best = null, bestV = null;
+  for (const name of names) {
+    const m = re.exec(name);
+    if (!m || !statFile(path.join(DOWNLOADS, name))) continue;
+    const v = m[1].split(".").map(Number);
+    let cmp = 0;
+    for (let i = 0; i < Math.max(v.length, bestV ? bestV.length : 0) && !cmp; i++) cmp = (v[i] || 0) - ((bestV && bestV[i]) || 0);
+    if (!bestV || cmp > 0) { best = name; bestV = v; }
+  }
+  return best;
+}
+
 function statFile(p) {
   try { const s = fs.statSync(p); return s.isFile() ? s : null; } catch (_) { return null; }
 }
@@ -463,12 +485,19 @@ function serveFile(req, res, abs, status) {
   // A year-long cache is what stops a returning visitor re-downloading every portrait on
   // the team page and every typeface on the site.
   const versioned = ["uploads", "fonts"].indexOf(path.basename(path.dirname(abs))) !== -1;
+  // An installer can be replaced under the same name (say, the signed build of 1.0.0), so it
+  // is cached briefly: Cloudflare still absorbs the bandwidth, and a swap shows within minutes.
+  const download = abs.startsWith(DOWNLOADS + path.sep);
   const cache = preset ? String(preset)
+    : download ? "public, max-age=300"
     : versioned ? "public, max-age=31536000, immutable"
     : generated || ext === ".html" || ext === ".xml" || ext === ".txt" || ext === ".json" ? "no-cache"
     : "public, max-age=3600";
   const headers = { "Content-Type": type, "Content-Length": st.size, "Cache-Control": cache, "X-Content-Type-Options": "nosniff", "Last-Modified": st.mtime.toUTCString() };
   if (ext === ".html") { headers["X-Frame-Options"] = "SAMEORIGIN"; headers["Referrer-Policy"] = "strict-origin-when-cross-origin"; }
+  if (download) headers["Content-Disposition"] = 'attachment; filename="' + path.basename(abs).replace(/["\\\r\n]/g, "") + '"';
+  // Prototypes are dummy data; robots.txt asks crawlers to stay out, this keeps them out of results.
+  if (abs.startsWith(path.join(DIST, "demo") + path.sep)) headers["X-Robots-Tag"] = "noindex, nofollow";
   res.writeHead(status || 200, headers);
   if (req.method === "HEAD") { res.end(); return; }
   const stream = fs.createReadStream(abs);
@@ -772,11 +801,29 @@ async function handle(req, res) {
     return serveStatic(req, res, ADMIN, p.slice("/admin".length), () => send(res, 404, "Admin file not found", { "Content-Type": "text/plain; charset=utf-8" }));
   }
 
+  /* /download/zehnms -> the newest ZehnMS-Setup-<version>.exe in DOWNLOADS. The site links
+     here rather than to a file name, so a new version is live the moment it is uploaded. */
+  if (p.startsWith("/download/")) {
+    const product = p.slice("/download/".length).replace(/\/+$/, "");
+    const file = /^[a-z0-9-]+$/i.test(product) ? newestInstaller(product) : null;
+    if (!file) return notFoundPage(req, res);
+    res.writeHead(302, { Location: "/downloads/" + encodeURIComponent(file), "Cache-Control": "no-cache" });
+    res.end();
+    return;
+  }
+  if (p.startsWith("/downloads/")) {
+    res.setHeader("X-Robots-Tag", "noindex");
+    return serveStatic(req, res, DOWNLOADS, p.slice("/downloads".length), () => notFoundPage(req, res));
+  }
+
   /* Pages live on disk as about.html but are served at /about. Both used to answer 200,
      which is duplicate content as far as a search engine is concerned, so the file form
      permanently redirects to the route. Only for files that actually exist — anything else
      must still reach the 404 page. */
-  if (/\.html$/i.test(p) && statFile(resolveStatic(DIST, p))) {
+  /* Except under /demo/: a product prototype is a static tree whose pages link to each other
+     as dashboard.html, till.html. Redirecting those would cost every click a round trip for
+     pages that are deliberately kept out of search anyway. */
+  if (/\.html$/i.test(p) && !p.startsWith("/demo/") && statFile(resolveStatic(DIST, p))) {
     let clean = p.replace(/\.html$/i, "");
     if (clean.endsWith("/index")) clean = clean.slice(0, -"index".length);
     if (!clean) clean = "/";

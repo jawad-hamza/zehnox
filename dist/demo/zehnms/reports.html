@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FYXZZP8N1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5FYXZZP8N1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reports · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app " data-module="reports">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Reports</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Pick a report. The dates above apply to every report you open. Each one exports to CSV.</span></span></div>
+<div class="k-head-actions"></div>
+<div class="k-head-tools"><div class="k-goto" role="search"><i class="bi bi-search" aria-hidden="true"></i><input type="search" class="k-goto-input" placeholder="Go to" aria-label="Go to a module or page"><kbd class="k-key">Ctrl K</kbd></div>
+<a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="k-page">
+<div class="row" style="margin-bottom:20px">
+<div class="field" style="width:220px"><label class="field-label">From</label><div class="input-icon end"><input class="input" value="01/09/2026"><i class="bi bi-calendar3" aria-hidden="true"></i></div></div>
+<div class="field" style="width:220px"><label class="field-label">To</label><div class="input-icon end"><input class="input" value="19/09/2026"><i class="bi bi-calendar3" aria-hidden="true"></i></div></div>
+<button type="button" class="btn" style="align-self:flex-end">Apply</button>
+</div>
+<div class="report-groups">
+<section class="panel"><div class="panel-head"><h2 class="panel-title">Sales</h2><span class="panel-note">5 reports</span></div><a class="report-link" href="#"><i class="bi bi-calendar-day" aria-hidden="true"></i><span><strong>Daily sales</strong><span>Net sales, returns and profit by day</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-receipt" aria-hidden="true"></i><span><strong>Sales by invoice</strong><span>Every invoice with its payment</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-box" aria-hidden="true"></i><span><strong>Sales by product</strong><span>What sold, how many, and the margin</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-person" aria-hidden="true"></i><span><strong>Sales by customer</strong><span>Credit and cash sales per customer</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i><span><strong>Returns</strong><span>Goods taken back and refunds</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a></section>
+<section class="panel"><div class="panel-head"><h2 class="panel-title">Stock</h2><span class="panel-note">4 reports</span></div><a class="report-link" href="#"><i class="bi bi-boxes" aria-hidden="true"></i><span><strong>Stock on hand</strong><span>Quantity and value of every product</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i><span><strong>Low stock</strong><span>Products below their reorder point</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-arrow-left-right" aria-hidden="true"></i><span><strong>Stock movement</strong><span>Sales, purchases and adjustments per product</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span><strong>Expiry alerts</strong><span>Batches close to their expiry date</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a></section>
+<section class="panel"><div class="panel-head"><h2 class="panel-title">Money</h2><span class="panel-note">5 reports</span></div><a class="report-link" href="trial-balance.html"><i class="bi bi-journal-check" aria-hidden="true"></i><span><strong>Trial balance</strong><span>Every account; debits equal credits</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-graph-up" aria-hidden="true"></i><span><strong>Profit and loss</strong><span>Income less costs and expenses</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-bank" aria-hidden="true"></i><span><strong>Balance sheet</strong><span>What the shop owns and owes</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-cash-stack" aria-hidden="true"></i><span><strong>Cash flow</strong><span>Money in and out of cash and bank</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-hourglass" aria-hidden="true"></i><span><strong>Receivables aging</strong><span>Who owes you, and for how long</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a></section>
+<section class="panel"><div class="panel-head"><h2 class="panel-title">Team</h2><span class="panel-note">3 reports</span></div><a class="report-link" href="#"><i class="bi bi-person-badge" aria-hidden="true"></i><span><strong>Sales by cashier</strong><span>Invoices and totals per login</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-clock-history" aria-hidden="true"></i><span><strong>Sessions</strong><span>Who signed in, and when</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+<a class="report-link" href="#"><i class="bi bi-shield-check" aria-hidden="true"></i><span><strong>Audit trail</strong><span>Changes to prices, stock and settings</span></span><i class="bi bi-chevron-right" aria-hidden="true"></i></a></section>
+</div>
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

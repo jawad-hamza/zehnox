@@ -3,7 +3,9 @@
    - copies src/ to dist/ (skips _templates/)
    - regenerates src/js/content.js AND dist/js/content.js from content.json (window.CONTENT)
    - expands src/_templates/post.html once per post into dist/insights/<slug>.html
-   - injects the Google Analytics tag into every html page on its way into dist/
+   - publishes each Prototypes/<Name>/ demo verbatim to dist/demo/<name>/ (kept out of the sitemap)
+   - injects the Google Analytics tag into every html page, and the ZehnBot chat widget into
+     every public one (not /demo/), on their way into dist/
    - writes dist/sitemap.xml (every html page, using site.url) and dist/robots.txt
    - idempotent: files in dist/ that this build did not produce are deleted
    Node built-ins only. Usage: node build.js   |   const { build } = require("./build"); build();
@@ -19,6 +21,12 @@ const DIST = path.join(ROOT, "dist");
 const CONTENT_FILE = path.join(ROOT, "content.json");
 const TEMPLATE_FILE = path.join(SRC, "_templates", "post.html");
 const SKIP_DIRS = new Set(["_templates"]);
+/* Product prototypes: static click-through demos for customers, kept at the repo root so
+   they can still be opened by double-clicking. Each Prototypes/<Name>/ is published as-is
+   to dist/demo/<name>/ — its own relative .html links, css and fonts untouched. */
+const PROTOTYPES = path.join(ROOT, "Prototypes");
+const DEMO_DIR = "demo";
+const PROTOTYPE_SKIP = new Set(["readme.txt"]);   // notes for us, not for customers
 const CONTENT_JS_HEADER = "/* generated from content.json by build.js - do not edit by hand */";
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -124,6 +132,30 @@ function withAnalytics(html, rel) {
   return html.slice(0, at) + nl + analyticsTag(nl) + html.slice(at);
 }
 
+/* ---------- ZehnBot chat widget ----------
+   The site runs its own product: every public page gets the ZehnBot widget, injected here
+   like the analytics tag so it lives in one place. Not on /demo/ pages, where the launcher
+   would sit on top of the prototype's own bottom bar.
+   Loaded async rather than defer: a deferred script holds back DOMContentLoaded until it
+   arrives, so a slow bot.zehnox.com would hold back this whole site with it. The widget
+   finds its own tag and starts once document.body exists, so it does not need defer.
+   Set CHAT_WIDGET_SRC="" in the environment to build without it. */
+const CHAT_WIDGET_SRC = process.env.CHAT_WIDGET_SRC !== undefined
+  ? process.env.CHAT_WIDGET_SRC.trim()
+  : "https://bot.zehnox.com/static/widget.js?client_id=zehnox-db881c";
+
+function withChatWidget(html, rel) {
+  if (!CHAT_WIDGET_SRC) return html;
+  if (rel.split(path.sep).join("/").startsWith(DEMO_DIR + "/")) return html;
+  if (html.indexOf("bot.zehnox.com/static/widget.js") !== -1) return html;   // already there; never twice
+  const end = html.search(/<\/body>/i);
+  if (end === -1) throw new Error(rel + ": no </body> to put the chat widget before");
+  const nl = html.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
+  return html.slice(0, end) + '<script src="' + esc(CHAT_WIDGET_SRC) + '" async></script>' + nl + html.slice(end);
+}
+
+const withSiteTags = (html, rel) => withChatWidget(withAnalytics(html, rel), rel);
+
 /* ---------- output tracking (so stale files can be removed) ---------- */
 function makeWriter(written) {
   const ensureDir = (dir) => fs.mkdirSync(dir, { recursive: true });
@@ -131,7 +163,7 @@ function makeWriter(written) {
     write(rel, data) {
       const abs = path.join(DIST, rel);
       ensureDir(path.dirname(abs));
-      fs.writeFileSync(abs, isHtml(rel) ? withAnalytics(String(data), rel) : data);
+      fs.writeFileSync(abs, isHtml(rel) ? withSiteTags(String(data), rel) : data);
       written.add(path.normalize(rel));
     },
     /* Pages are read, tagged and written rather than copied byte for byte; everything
@@ -139,7 +171,7 @@ function makeWriter(written) {
     copy(srcAbs, rel) {
       const abs = path.join(DIST, rel);
       ensureDir(path.dirname(abs));
-      if (isHtml(rel)) fs.writeFileSync(abs, withAnalytics(fs.readFileSync(srcAbs, "utf8"), rel));
+      if (isHtml(rel)) fs.writeFileSync(abs, withSiteTags(fs.readFileSync(srcAbs, "utf8"), rel));
       else fs.copyFileSync(srcAbs, abs);
       written.add(path.normalize(rel));
     }
@@ -161,6 +193,30 @@ function copyTree(srcDir, relDir, out, stats) {
       stats.copied++;
     }
   }
+}
+
+function copyPrototype(srcDir, relDir, out, stats) {
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.name.startsWith(".") || PROTOTYPE_SKIP.has(entry.name.toLowerCase())) continue;
+    const abs = path.join(srcDir, entry.name);
+    const rel = path.join(relDir, entry.name);
+    if (entry.isDirectory()) copyPrototype(abs, rel, out, stats);
+    else if (entry.isFile()) { out.copy(abs, rel); stats.copied++; }
+  }
+}
+
+/* Every Prototypes/<Name>/ becomes /demo/<name>/. Returns the published names. */
+function publishPrototypes(out, stats) {
+  if (!fs.existsSync(PROTOTYPES)) return [];
+  const names = [];
+  for (const entry of fs.readdirSync(PROTOTYPES, { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name.startsWith(".") || entry.name.startsWith("_")) continue;
+    const slug = entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    if (!slug) continue;
+    copyPrototype(path.join(PROTOTYPES, entry.name), path.join(DEMO_DIR, slug), out, stats);
+    names.push(slug);
+  }
+  return names;
 }
 
 function removeStale(written, log) {
@@ -241,7 +297,7 @@ function sitemapXml(pages, content, posts) {
 }
 
 function robotsTxt(content) {
-  return "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\n\nSitemap: " + siteUrl(content) + "/sitemap.xml\n";
+  return "User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /api/\nDisallow: /" + DEMO_DIR + "/\n\nSitemap: " + siteUrl(content) + "/sitemap.xml\n";
 }
 
 /* ---------- main ---------- */
@@ -262,6 +318,7 @@ function build(options) {
   // 1. copy src → dist
   fs.mkdirSync(DIST, { recursive: true });
   copyTree(SRC, "", out, stats);
+  const demos = publishPrototypes(out, stats);
 
   // 2. content.js in both places
   const js = contentJs(content);
@@ -289,8 +346,10 @@ function build(options) {
     warn("src/_templates/post.html not found — " + rawPosts.length + " insight page(s) not generated");
   }
 
-  // 4. sitemap + robots (every html page now in dist)
-  const pages = [...written].filter((f) => f.endsWith(".html")).map((f) => f.split(path.sep).join("/"));
+  // 4. sitemap + robots (every html page now in dist, minus the demos: dummy data is not
+  //    something to rank for, so they stay out of the index)
+  const pages = [...written].filter((f) => f.endsWith(".html")).map((f) => f.split(path.sep).join("/"))
+    .filter((f) => !f.startsWith(DEMO_DIR + "/"));
   out.write("sitemap.xml", sitemapXml(pages, content, posts));
   out.write("robots.txt", robotsTxt(content));
   stats.pages = pages.length;
@@ -300,7 +359,9 @@ function build(options) {
   stats.warnings = messages.filter((m) => m.startsWith("warning:")).length;
 
   const ms = Date.now() - started;
-  log("build: " + stats.copied + " files copied, " + stats.posts + " insight page(s), " + stats.pages + " html page(s) in sitemap, " +
+  log("build: " + stats.copied + " files copied, " + stats.posts + " insight page(s), " +
+      (demos.length ? demos.length + " demo(s) at /" + DEMO_DIR + "/ (" + demos.join(", ") + "), " : "") +
+      stats.pages + " html page(s) in sitemap, " +
       stats.removed + " stale file(s) removed, " + stats.warnings + " warning(s) — " + ms + " ms → " + path.relative(ROOT, DIST) + "/");
   return { ok: true, ms, stats, messages, dist: DIST };
 }

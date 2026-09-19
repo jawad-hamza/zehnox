@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add product · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app has-side" data-module="products">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Add product</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Add something the shop sells. Supporting records like a category open beside the form so you keep your place.</span></span></div>
+<div class="k-head-actions"><a href="products.html" class="btn"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to products</a></div>
+<div class="k-head-tools"><div class="k-goto" role="search"><i class="bi bi-search" aria-hidden="true"></i><input type="search" class="k-goto-input" placeholder="Go to" aria-label="Go to a module or page"><kbd class="k-key">Ctrl K</kbd></div>
+<a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="with-side">
+<div class="k-page">
+<form data-next="products.html">
+<section class="panel">
+<div class="panel-head"><h2 class="panel-title">Basics</h2><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>The name and codes the till searches.</span></span></div>
+<div class="form-grid">
+<div class="field span-2"><label class="field-label">Name <span class="req">*</span></label><input class="input" value="Rusk 200 g"></div>
+<div class="field"><label class="field-label">SKU <span class="req">*</span></label><input class="input" value="AN-0190"></div>
+<div class="field"><label class="field-label">Barcode <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Scan the pack's barcode into this box.</span></span></label><input class="input" value="0000000001905"></div>
+<div class="field"><label class="field-label">Category</label><select class="select"><option>Bakery</option><option>Choose a category</option></select>
+<a href="#" class="field-add" data-toggle="catPanel" data-side><i class="bi bi-plus-lg" aria-hidden="true"></i>Add category</a></div>
+<div class="field"><label class="field-label">Brand</label><select class="select"><option>No brand</option></select><a href="#" class="field-add"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add brand</a></div>
+<div class="field"><label class="field-label">Supplier</label><select class="select"><option>City Distributors</option><option>Punjab Flour Mills</option></select><a href="#" class="field-add"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add supplier</a></div>
+</div>
+</section>
+
+<section class="panel">
+<div class="panel-head"><h2 class="panel-title">Pricing</h2><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Pick how the sale price is set. The summary on the right updates as you type.</span></span></div>
+<div class="pricing">
+<div class="field"><label class="field-label">Sold by <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Pieces, or a weight, volume or length unit sold in fractions.</span></span></label><select class="select"><option>Piece (pcs)</option><option>Kilogram (kg)</option></select></div>
+<div class="field"><label class="field-label">Current cost <span class="req">*</span> <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>What one unit costs you. Purchases keep it up to date as a weighted average.</span></span></label><input class="input num" value="100.00"></div>
+<div class="field"><label class="field-label">Price by <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Type the sale price yourself, or set it as cost plus a percent or a fixed amount.</span></span></label><select class="select"><option>Amount on cost</option><option>Percent on cost</option><option>Type the sale price</option></select></div>
+<div class="field"><label class="field-label">Amount on cost</label><input class="input num is-focus" value="20.00"></div>
+<div class="field"><label class="field-label">Sale price <span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Worked out from cost and amount on cost.</span></span></label><input class="input num" value="120.00" readonly></div>
+<div class="field"><label class="field-label">Minimum margin (%) <span class="req">*</span></label><input class="input num" value="10"></div>
+<aside class="summary" aria-label="Price summary">
+<div class="r"><span>Cost</span><b>100.00</b></div>
+<div class="r"><span>Amount on cost</span><b>+ 20.00</b></div>
+<div class="r"><span>Lowest price (10% margin)</span><b>Rs 110.00</b></div>
+<div class="r big"><span class="strong">Sale price</span><b>Rs 120.00</b></div>
+<p class="soft mt-2">Sale price Rs 120.00 = cost 100.00 + 20.00</p>
+<p class="ok"><i class="bi bi-check-circle" aria-hidden="true"></i> Margin 20% vs minimum 10%: OK</p>
+</aside>
+</div>
+</section>
+
+<section class="panel">
+<div class="panel-head"><h2 class="panel-title">Stock</h2><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>How many you have now and when to warn you.</span></span></div>
+<div class="form-grid">
+<div class="field"><label class="field-label">Opening stock</label><input class="input num" value="48"></div>
+<div class="field"><label class="field-label">Low stock threshold <span class="req">*</span></label><input class="input num" value="10"></div>
+<div class="field"><label class="field-label">Storage location</label><input class="input" placeholder="Shelf or rack, e.g. B-3" value="Rack B-3"></div>
+<div class="field"><label class="field-label">Item type</label><select class="select"><option>Stocked item</option><option>Service (no stock)</option></select></div>
+</div>
+</section>
+
+<div class="sticky-save">
+<a href="products.html" class="btn">Cancel</a>
+<button type="button" class="btn">Save and add another</button>
+<button type="submit" class="btn btn-primary">Save product</button>
+</div>
+</form>
+</div>
+<aside class="side-panel" id="catPanel" aria-label="Add category">
+<div class="side-panel-head"><h2>Add category</h2><button type="button" class="btn btn-icon" data-toggle="catPanel" data-side aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>
+<div class="field"><label class="field-label">Name <span class="req">*</span></label><input class="input is-focus" value="Frozen food"></div>
+<div class="field"><label class="field-label">Parent category</label><select class="select"><option>None (top level)</option><option>Grocery</option></select></div>
+<div class="row mt-5"><button type="button" class="btn btn-primary" data-toggle="catPanel" data-side>Save category</button><button type="button" class="btn" data-toggle="catPanel" data-side>Cancel</button></div>
+<p class="soft small mt-5">Your typing in the product form stays where it is.</p>
+</aside>
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

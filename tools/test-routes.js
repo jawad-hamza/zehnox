@@ -20,10 +20,13 @@ async function test(name, fn) {
   catch (e) { failed++; console.error("  FAIL " + name + "\n       " + (e && e.message ? e.message : e)); }
 }
 
-/* Every .html file in dist, as a "/services/ai-automation.html" style url path. */
+/* Every .html file in dist, as a "/services/ai-automation.html" style url path.
+   dist/demo/ is left out on purpose: product prototypes are published verbatim, link to
+   each other as page.html, and are exempt from the redirect (see tools/test-demo.js). */
 function distPages(dir, prefix, out) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (entry.name.startsWith("_")) continue;
+    if (!prefix && entry.name === "demo") continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) distPages(full, prefix + "/" + entry.name, out);
     else if (entry.name.endsWith(".html")) out.push(prefix + "/" + entry.name);

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" class="k-shell">
+<head>
+<meta charset="utf-8">
+<!-- Google tag (gtag.js) — injected by build.js; edit GA_MEASUREMENT_ID there, not here -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5FYXZZP8N1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5FYXZZP8N1');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Products · ZehnMS prototype</title>
+<link rel="stylesheet" href="assets/icons/bootstrap-icons.min.css">
+<link rel="stylesheet" href="assets/zehnms-prototype.css">
+</head>
+<body class="k-app " data-module="products">
+<aside class="k-rail" id="sidebar" aria-label="Modules">
+<div class="k-rail-cover"><span class="k-rail-mark" aria-hidden="true">A</span><div class="k-rail-brand"><p class="k-rail-name">Al-Noor General Store</p><p class="k-rail-sub">Lahore</p></div></div>
+<nav class="k-rail-nav" aria-label="Modules">
+<p class="k-rail-group">Counter</p>
+<a href="dashboard.html" class="k-rail-link" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-rail-link" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<p class="k-rail-group">Stock</p>
+<a href="products.html" class="k-rail-link" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<a href="products.html" class="k-rail-link" data-module-link="stock"><i class="bi bi-boxes" aria-hidden="true"></i><span>Stock control</span></a>
+<a href="purchase.html" class="k-rail-link" data-module-link="purchases"><i class="bi bi-truck" aria-hidden="true"></i><span>Purchases</span></a>
+<p class="k-rail-group">Money</p>
+<a href="reports.html" class="k-rail-link" data-module-link="expenses"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><span>Expenses</span></a>
+<a href="customers.html" class="k-rail-link" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="trial-balance.html" class="k-rail-link" data-module-link="accounts"><i class="bi bi-journal-text" aria-hidden="true"></i><span>Accounts</span></a>
+<p class="k-rail-group">Office</p>
+<a href="reports.html" class="k-rail-link" data-module-link="reports"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Reports</span></a>
+<a href="settings.html" class="k-rail-link" data-module-link="settings"><i class="bi bi-gear" aria-hidden="true"></i><span>Settings</span></a>
+</nav>
+<div class="k-rail-foot"><a href="index.html" class="k-rail-link"><i class="bi bi-grid" aria-hidden="true"></i><span>All prototype screens</span></a></div>
+</aside>
+<header class="k-head">
+<button type="button" class="k-head-btn k-only-phone" data-drawer aria-label="Open the menu"><i class="bi bi-list" aria-hidden="true"></i></button>
+<div class="k-head-heading"><h1 class="k-head-title">Products</h1><span class="k-tip"><button type="button" class="k-tip-btn" aria-label="About this page" aria-expanded="false"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span class="k-tip-body" role="tooltip" hidden>Everything the shop sells. Sizes of one item are grouped in one row: click it to open or fold the sizes.</span></span></div>
+<div class="k-head-actions"><a href="product-form.html" class="btn btn-primary"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add product</a>
+<button type="button" class="btn"><i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>Import</button>
+<button type="button" class="btn"><i class="bi bi-download" aria-hidden="true"></i>Export</button></div>
+<div class="k-head-tools"><div class="k-goto" role="search"><i class="bi bi-search" aria-hidden="true"></i><input type="search" class="k-goto-input" placeholder="Go to" aria-label="Go to a module or page"><kbd class="k-key">Ctrl K</kbd></div>
+<a href="settings.html#licence" class="k-head-notice" title="Trial: 7 days left"><i class="bi bi-hourglass-split" aria-hidden="true"></i><span>Trial: 7 days left</span></a>
+<button type="button" class="k-head-btn k-only-desk" aria-label="Keyboard shortcuts"><i class="bi bi-keyboard" aria-hidden="true"></i></button>
+<a href="login.html" class="k-head-btn" aria-label="Your account (goes to sign in)"><span class="k-avatar" aria-hidden="true">K</span><span class="k-user-name">Kamran Aslam</span></a></div>
+</header>
+<main class="k-body" id="content">
+<div class="k-page">
+<section class="panel">
+<div class="filters">
+<div class="field"><label class="field-label" for="q">Search</label><div class="input-icon"><i class="bi bi-search" aria-hidden="true"></i><input class="input" id="q" placeholder="Name, SKU, barcode, supplier"></div></div>
+<div class="field"><label class="field-label">Category</label><select class="select"><option>All categories</option><option>Grocery</option><option>Bakery</option><option>Dairy</option><option>Household</option></select></div>
+<div class="field"><label class="field-label">Status</label><select class="select"><option>All statuses</option><option>Low on stock</option><option>Out of stock</option></select></div>
+<div class="row"><button type="button" class="btn">Apply</button><a href="#" class="btn btn-link">Reset</a></div>
+</div>
+<div class="filter-counts"><span><b>12</b> products matching</span><span><b>12</b> active</span><span class="badge badge-amber">3 low on stock</span><span class="badge badge-red">2 out of stock</span></div>
+</section>
+
+<section class="panel panel--flush">
+<div class="panel-head"><h2 class="panel-title">All products</h2><span class="panel-note">12 products in 10 rows, sizes grouped</span></div>
+<table class="k-table stack">
+<thead><tr><th>Product <i class="bi bi-arrow-down" aria-hidden="true"></i></th><th class="hide-sm">Category</th><th class="num">Sale price</th><th class="num">Stock</th><th class="hide-sm"><span class="sr-only">Edit</span></th></tr></thead>
+<tbody>
+<tr><td>Atta Chakki Fresh 10 kg<span class="sub">SKU AN-0101</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 1,350.00</td><td class="num">24 pcs</td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Atta (loose)<span class="sub">SKU AN-0102 · sold by kg</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 140.00<span class="soft small">/kg</span></td><td class="num">86.500 kg</td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Basmati rice 5 kg<span class="sub">SKU AN-0110</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 1,450.00</td><td class="num"><span class="badge badge-amber">Low</span> <span class="due" style="margin-left:6px">3 pcs</span></td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr data-family="bread" style="cursor:pointer"><td><span class="twist"><i class="bi bi-chevron-down" aria-hidden="true"></i></span><b class="strong">Bread</b><span class="sub" style="padding-left:18px">3 sizes · Rs 80 – Rs 140</span></td><td class="hide-sm">Bakery</td><td class="num">Rs 80.00 – Rs 140.00</td><td class="num">67 pcs<span class="sub">all sizes</span></td><td class="hide-sm"></td></tr>
+<tr class="child" data-child-of="bread"><td>Bread - Small<span class="sub">SKU AN-BREAD-S</span></td><td class="hide-sm soft">Bakery</td><td class="num">Rs 80.00</td><td class="num"><span class="badge badge-amber">Low</span> <span class="due" style="margin-left:6px">2 pcs</span></td><td class="hide-sm"></td></tr>
+<tr class="child" data-child-of="bread"><td>Bread - Medium<span class="sub">SKU AN-BREAD-M</span></td><td class="hide-sm soft">Bakery</td><td class="num">Rs 110.00</td><td class="num">25 pcs</td><td class="hide-sm"></td></tr>
+<tr class="child" data-child-of="bread"><td>Bread - Large<span class="sub">SKU AN-BREAD-L</span></td><td class="hide-sm soft">Bakery</td><td class="num">Rs 140.00</td><td class="num">40 pcs</td><td class="hide-sm"></td></tr>
+<tr><td>Cooking oil 1 L<span class="sub">SKU AN-0130</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 560.00</td><td class="num">48 pcs</td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Milk pack 1 L<span class="sub">SKU AN-0140</span></td><td class="hide-sm">Dairy</td><td class="num">Rs 230.00</td><td class="num">36 pcs</td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Salt 800 g<span class="sub">SKU AN-0150</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 60.00</td><td class="num"><span class="badge badge-red">Out</span> <span class="out" style="margin-left:6px">0 pcs</span></td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Sugar 1 kg<span class="sub">SKU AN-0160</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 155.00</td><td class="num">120 pcs</td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Surf Excel 1 kg<span class="sub">SKU AN-0170</span></td><td class="hide-sm">Household</td><td class="num">Rs 650.00</td><td class="num"><span class="badge badge-red">Out</span> <span class="out" style="margin-left:6px">0 pcs</span></td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+<tr><td>Tea 190 g<span class="sub">SKU AN-0180</span></td><td class="hide-sm">Grocery</td><td class="num">Rs 390.00</td><td class="num"><span class="badge badge-amber">Low</span> <span class="due" style="margin-left:6px">4 pcs</span></td><td class="hide-sm num"><a href="product-form.html" class="btn btn-icon" aria-label="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></a></td></tr>
+</tbody>
+</table>
+</section>
+</div>
+</main>
+<nav class="k-tabbar" aria-label="Main modules">
+<a href="dashboard.html" class="k-tab" data-module-link="dashboard"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></a>
+<a href="till.html" class="k-tab" data-module-link="till"><i class="bi bi-cart4" aria-hidden="true"></i><span>Till</span></a>
+<a href="customers.html" class="k-tab" data-module-link="parties"><i class="bi bi-people" aria-hidden="true"></i><span>Parties</span></a>
+<a href="products.html" class="k-tab" data-module-link="products"><i class="bi bi-box-seam" aria-hidden="true"></i><span>Products</span></a>
+<button type="button" class="k-tab" data-drawer><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>More</span></button>
+</nav>
+<div class="k-scrim"></div>
+<div class="proto-tag" aria-label="Prototype with dummy data">Prototype · dummy data</div>
+<script src="assets/prototype.js"></script>
+</body>
+</html>

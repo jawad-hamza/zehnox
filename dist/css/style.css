@@ -806,6 +806,10 @@ a.tilecard:hover { border-color: rgba(242, 244, 245, .4); transform: translateY(
 .pshot--hero { position: relative; margin: clamp(40px, 6vw, 72px) 0 0; padding: 0 0 5%; border: 0; background: none; box-shadow: none; border-radius: 0; }
 .pshot__back { display: block; width: 86%; height: auto; border-radius: 14px; border: 1px solid var(--line-dark); box-shadow: 0 50px 100px -50px rgba(0, 0, 0, .8); }
 .pshot__front { position: absolute; right: 0; bottom: 0; height: 100%; width: auto; max-width: none; }
+/* A full app screen in front (ZehnMS) is a hard-edged rectangle, unlike ZehnBot's widget,
+   which carries its own transparent rounded corners — so it gets the same frame as the
+   screen behind it. */
+.pshot__front--screen { border-radius: 14px; border: 1px solid var(--line-dark); box-shadow: 0 50px 100px -50px rgba(0, 0, 0, .8); }
 .steps--3 { grid-template-columns: repeat(3, 1fr); }
 .steps .pshot { margin-top: 6px; }
 .bundle__lead { color: var(--muted-dark); font-size: .9375rem; }
