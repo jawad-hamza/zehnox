@@ -210,6 +210,35 @@ function imageSize(file) {
     try { fs.rmSync(downloads, { recursive: true, force: true }); } catch (_) { /* best effort */ }
   }
 
+  /* ---- a server with no installer at all: the button must still start a download ---- */
+  const empty = fs.mkdtempSync(path.join(os.tmpdir(), "zx-downloads-empty-"));
+  const bare = spawn(process.execPath, ["server.js", String(PORT + 1)], {
+    cwd: ROOT, stdio: "ignore", env: Object.assign({}, process.env, { DOWNLOADS_DIR: empty }),
+  });
+  try {
+    const base2 = "http://127.0.0.1:" + (PORT + 1);
+    for (let i = 0; i < 100; i++) { try { await fetch(base2 + "/"); break; } catch (_) { await new Promise((r) => setTimeout(r, 100)); } }
+
+    await test("with no installer on the server, /download/zehnms falls back to a direct download", async () => {
+      const res = await fetch(base2 + "/download/zehnms", { redirect: "manual" });
+      assert.strictEqual(res.status, 302, "the Download button would dead-end on a 404");
+      const to = res.headers.get("location") || "";
+      assert.match(to, /^https:\/\//, "fallback must be an absolute https url: " + to);
+      // A Drive share link (/file/d/…/view) opens a preview page, not a download.
+      assert.ok(!/drive\.google\.com\/file\/d\//.test(to), "fallback is a Drive preview link, which does not start a download: " + to);
+      if (/drive\.usercontent\.google\.com/.test(to)) assert.match(to, /[?&]confirm=t\b/, "without confirm=t, Drive stops large files on a virus-scan page");
+      assert.strictEqual(res.headers.get("cache-control"), "no-cache", "the fallback must not be cached, or the server copy would never take over");
+    });
+
+    await test("a product with no installer and no fallback still 404s", async () => {
+      const res = await fetch(base2 + "/download/nothing", { redirect: "manual" });
+      assert.strictEqual(res.status, 404);
+    });
+  } finally {
+    bare.kill();
+    try { fs.rmSync(empty, { recursive: true, force: true }); } catch (_) { /* best effort */ }
+  }
+
   console.log("\n" + (failed ? "FAILED " : "") + passed + " passed, " + failed + " failed");
   process.exitCode = failed ? 1 : 0;
   setTimeout(() => process.exit(process.exitCode), 200);

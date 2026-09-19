@@ -30,6 +30,14 @@ const UPLOADS = path.join(SRC, "uploads");
    /opt/zehnox/persistent/downloads folder is mounted here, so shipping a new build is one
    file copy — no commit, no deploy, no 50 MB binary in the repo's history forever. */
 const DOWNLOADS = path.resolve(process.env.DOWNLOADS_DIR || path.join(ROOT, "downloads"));
+/* Where /download/<product> sends people while this server has no installer for it. A file
+   in DOWNLOADS always wins, so a fallback can stay here harmlessly after the upload.
+   Google Drive: the /file/d/<id>/view share link opens a preview, and plain uc?export=download
+   stops on a "can't scan this file" page for anything over ~25 MB; this form with confirm=t
+   is the one that starts the download. */
+const DOWNLOAD_FALLBACKS = {
+  zehnms: "https://drive.usercontent.google.com/download?id=1y_uF3IPVhKjbkcHnnwLjpzbJTYtGxLAK&export=download&confirm=t",
+};
 const CONTENT_FILE = path.join(ROOT, "content.json");
 const TOKEN_FILE = path.join(DATA, "admin-token.txt");
 const INQUIRIES_FILE = path.join(DATA, "inquiries.json");
@@ -808,6 +816,12 @@ async function handle(req, res) {
     const valid = /^[a-z0-9-]+$/i.test(product);
     const file = valid ? newestInstaller(product) : null;
     if (!file) {
+      const fallback = valid && Object.prototype.hasOwnProperty.call(DOWNLOAD_FALLBACKS, product.toLowerCase()) ? DOWNLOAD_FALLBACKS[product.toLowerCase()] : "";
+      if (fallback) {
+        res.writeHead(302, { Location: fallback, "Cache-Control": "no-cache" });
+        res.end();
+        return;
+      }
       // A live download button with nothing behind it is a lost customer: make it loud.
       if (valid) logErr("download requested but no " + product + "-Setup-<version>.exe in " + DOWNLOADS + " — is the folder mounted and the file renamed from .part?");
       return notFoundPage(req, res);
