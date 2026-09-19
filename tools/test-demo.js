@@ -140,7 +140,11 @@ function imageSize(file) {
      stable /download/<product> route, never to a file that only exists on one machine. */
   await test("the ZehnMS download button uses the stable /download/zehnms route", () => {
     const html = fs.readFileSync(path.join(SRC, "zehnms.html"), "utf8");
-    assert.ok(/href="\/download\/zehnms"[^>]*>Download trial</.test(html), "\"Download trial\" does not point at /download/zehnms");
+    const button = /<a[^>]*href="\/download\/zehnms"[^>]*>Download trial</.exec(html);
+    assert.ok(button, "\"Download trial\" does not point at /download/zehnms");
+    // The server already sends Content-Disposition: attachment. With the download attribute
+    // as well, a missing installer makes the browser save the 404 page as if it were the setup.
+    assert.ok(!/\sdownload[\s>=]/.test(button[0]), "the button must not carry the download attribute — it turns an error page into a fake installer");
     assert.ok(!fs.existsSync(path.join(SRC, "downloads")), "src/downloads/ exists — installers belong on the server, not in the site sources");
     assert.ok(!fs.existsSync(path.join(DIST, "downloads")), "dist/downloads/ exists — an installer is being built into the site");
   });

@@ -805,8 +805,13 @@ async function handle(req, res) {
      here rather than to a file name, so a new version is live the moment it is uploaded. */
   if (p.startsWith("/download/")) {
     const product = p.slice("/download/".length).replace(/\/+$/, "");
-    const file = /^[a-z0-9-]+$/i.test(product) ? newestInstaller(product) : null;
-    if (!file) return notFoundPage(req, res);
+    const valid = /^[a-z0-9-]+$/i.test(product);
+    const file = valid ? newestInstaller(product) : null;
+    if (!file) {
+      // A live download button with nothing behind it is a lost customer: make it loud.
+      if (valid) logErr("download requested but no " + product + "-Setup-<version>.exe in " + DOWNLOADS + " — is the folder mounted and the file renamed from .part?");
+      return notFoundPage(req, res);
+    }
     res.writeHead(302, { Location: "/downloads/" + encodeURIComponent(file), "Cache-Control": "no-cache" });
     res.end();
     return;
