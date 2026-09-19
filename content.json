@@ -72,6 +72,17 @@
   ],
   "work": [
     {
+      "slug": "zehnbot",
+      "title": "ZehnBot — the website chatbot that captures leads",
+      "vertical": "AI Automation",
+      "year": "2026",
+      "summary": "A ZEHNOX product, designed and engineered in-house: a multi-tenant platform where a business loads its own content, puts a chat widget on its website, and receives the leads. Built so answers come only from the customer's own material.",
+      "tags": [
+        "Product"
+      ],
+      "url": "/zehnbot"
+    },
+    {
       "slug": "zehnox-com",
       "title": "zehnox.com — this site",
       "vertical": "Web & Digital",

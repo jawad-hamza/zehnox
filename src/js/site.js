@@ -79,7 +79,9 @@
       const inner = '<span class="mono">' + esc(w.year || "") + "</span><div><h3>" + esc(w.title) + "</h3>" + (w.summary ? '<p class="row__desc">' + esc(w.summary) + "</p>" : "") + '</div><span class="row__tags">' + tags + '</span><span class="row__arrow" aria-hidden="true">\u2192</span>';
       /* Every entry stays reachable: the external case study when one is set, the
          work index otherwise, so a row is never a dead end. */
-      return w.url ? '<a class="row row--feature reveal" href="' + esc(w.url) + '" target="_blank" rel="noopener" data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>"
+      /* A url that starts with "/" is a page of this site (a product page such as /zehnbot): same tab. */
+      const internal = /^\/(?!\/)/.test(w.url || "");
+      return w.url ? '<a class="row row--feature reveal" href="' + esc(w.url) + '"' + (internal ? "" : ' target="_blank" rel="noopener"') + ' data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>"
                    : '<a class="row row--feature reveal" href="' + ROOT + 'work" data-cursor="View" data-vertical="' + esc(w.vertical) + '">' + inner + "</a>";
     }).join("") || '<p class="placeholder-block"><span class="mono">No work published yet.</span></p>';
 
@@ -422,4 +424,30 @@
       if (hasST) ScrollTrigger.refresh();
     });
   });
+
+  /* ---------- product page: ZehnBot plan prices ----------
+     The prices are set in the ZehnBot dashboard (Settings > Plans and pricing). The page ships with
+     the numbers it was built with, so it is complete with no script and when the app cannot be
+     reached; when it can, the cards are brought up to date. Everything is written as text. */
+  (function () {
+    const grid = document.querySelector("[data-zb-plans]");
+    if (!grid || typeof fetch !== "function") return;
+    const money = (p) => p.currency + (Number.isInteger(p.price) ? p.price.toLocaleString("en") : p.price.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    const put = (card, sel, text) => { const el = card.querySelector(sel); if (el && text) el.textContent = text; };
+    fetch(grid.dataset.zbPlans, { mode: "cors", credentials: "omit" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((plans) => {
+        if (!Array.isArray(plans)) return;
+        plans.forEach((p) => {
+          const card = grid.querySelector('[data-plan="' + String(p.id).replace(/[^a-z0-9-]/gi, "") + '"]');
+          if (!card || typeof p.price !== "number" || typeof p.currency !== "string") return;
+          put(card, "[data-plan-price]", money(p));
+          put(card, "[data-plan-blurb]", p.blurb);
+          put(card, "[data-plan-bots]", p.max_bots + (p.max_bots === 1 ? " bot" : " bots"));
+          put(card, "[data-plan-messages]", Number(p.monthly_message_quota).toLocaleString("en") + " messages a month");
+          card.classList.toggle("is-pick", !!p.recommended);
+        });
+      })
+      .catch(() => {});
+  })();
 })();

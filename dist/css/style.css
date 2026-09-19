@@ -790,4 +790,45 @@ a.tilecard:hover { border-color: rgba(242, 244, 245, .4); transform: translateY(
   .caps__counter, .caps__rail { display: none; }
 }
 @media (max-width: 560px) { .aud__grid, .footer__grid { grid-template-columns: 1fr; } .hero__cta .btn, .final__cta .btn { width: 100%; } }
+/* ==========================================================================
+   PRODUCT PAGE KIT — for a ZEHNOX product with its own page (first use: /zehnbot).
+   Adds the three things the inner-page kit has no word for: a framed screenshot,
+   a product hero that carries one, and plan cards. Everything else on a product
+   page is the inner-page kit above.
+   ========================================================================== */
+.pshot { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line-dark); background: var(--obsidian-2); box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .7); }
+.sec--light .pshot { border-color: var(--line-light); background: #fff; box-shadow: 0 30px 60px -36px rgba(19, 16, 31, .35); }
+.pshots { margin-bottom: clamp(36px, 5vw, 64px); }
+.pshots figure { display: grid; gap: 12px; }
+.pshots figcaption { color: var(--muted-dark); }
+.phero--product { padding-bottom: clamp(56px, 8vw, 110px); }
+/* two real captures: the dashboard sits back, the chat widget (cut out, with its own shadow) stands in front */
+.pshot--hero { position: relative; margin: clamp(40px, 6vw, 72px) 0 0; padding: 0 0 5%; border: 0; background: none; box-shadow: none; border-radius: 0; }
+.pshot__back { display: block; width: 86%; height: auto; border-radius: 14px; border: 1px solid var(--line-dark); box-shadow: 0 50px 100px -50px rgba(0, 0, 0, .8); }
+.pshot__front { position: absolute; right: 0; bottom: 0; height: 100%; width: auto; max-width: none; }
+.steps--3 { grid-template-columns: repeat(3, 1fr); }
+.steps .pshot { margin-top: 6px; }
+.bundle__lead { color: var(--muted-dark); font-size: .9375rem; }
+.sec--light .bundle__lead { color: var(--muted-light); }
+/* plan cards */
+.plan { display: grid; align-content: start; gap: 14px; padding: 28px; border: 1px solid var(--line-dark); border-radius: 16px; }
+.sec--light .plan { background: #fff; border-color: var(--line-light); }
+.plan.is-pick { border-color: var(--lime); }
+.sec--light .plan.is-pick { border-color: var(--cobalt); box-shadow: 0 0 0 1px var(--cobalt); }
+.plan__name { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.plan__name h3 { font-size: 1.4rem; }
+.plan__pick { display: none; }
+.plan.is-pick .plan__pick { display: inline-flex; }
+.plan__price { font-family: var(--display); font-size: clamp(2.4rem, 1.8rem + 1.6vw, 3.2rem); line-height: 1; letter-spacing: -0.02em; }
+.plan__price small { font-family: var(--font); font-size: .9375rem; letter-spacing: 0; color: var(--muted-dark); margin-left: 6px; }
+.sec--light .plan__price small, .sec--light .plan__for { color: var(--muted-light); }
+.plan__for { color: var(--muted-dark); font-size: .9375rem; min-height: 2.9em; }
+.plan .btn { justify-self: stretch; justify-content: center; margin-top: 6px; }
+/* the kit's outline button is drawn for dark grounds; a plan card in a light section is white */
+.sec--light .plan .btn--outline { border-color: rgba(19, 16, 31, .35); color: var(--ink); }
+.sec--light .plan .btn--outline:hover { background: rgba(2, 27, 140, .06); border-color: var(--cobalt); }
+.plans + .notice { margin-top: 28px; }
+@media (max-width: 1100px) { .steps--3 { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .pshot--hero { padding-bottom: 12%; } .pshot__back { width: 100%; } .pshot__front { height: 86%; } .plan { padding: 22px; } .plan__for { min-height: 0; } }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }

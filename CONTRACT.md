@@ -44,6 +44,7 @@ Node 24 is available. Use ONLY Node built-ins (`http`, `fs`, `path`, `crypto`). 
 | Thank you | `src/thank-you.html` | `` |
 | Privacy / Terms / Cookies | `src/privacy.html`, `src/terms.html`, `src/cookies.html` | `` |
 | 404 | `src/404.html` | `` |
+| ZehnBot (product page) | `src/zehnbot.html`, images in `src/products/zehnbot/` | `` |
 
 **Root prefix rule.** Every relative URL in a page is prefixed with the page's root prefix: `css/style.css` at root,
 `../css/style.css` one level down. Also set `<body data-root="">` or `<body data-root="../">` so `site.js` can build links.
@@ -225,3 +226,27 @@ HttpOnly cookie), `POST /api/logout`, `GET /api/me`, `POST /api/account` (`{curr
 Every admin route requires `Authorization: Bearer <session>` (or the cookie). Credentials are a salted scrypt hash in
 `data/admin-auth.json`; the first run creates user `admin` with a random password saved to `data/initial-password.txt`.
 No third-party packages.
+
+## 9. Product pages (first: ZehnBot, `/zehnbot`)
+
+A ZEHNOX **product** is self-serve software with its own application on its own host. The page on this site is its
+landing page only; the application is a separate system. ZehnBot's lives at `https://bot.zehnox.com`, and every
+"Start free" / "Log in" on `/zehnbot` points there. Nothing of the application is hosted or proxied by this site.
+
+Rules that differ from the rest of the site, and only on a product page:
+
+- **Prices are shown.** A self-serve product has plans, so section 6's "no pricing anywhere" does not apply to it.
+  It still applies to every service and solution page. The closing `.final` block on a product page drops the
+  words "No public pricing" for the same reason; the block is otherwise unchanged and still required.
+- **The prices are not edited here.** They are set in the ZehnBot dashboard (Settings > Plans and pricing). The
+  HTML carries the prices the page was built with, so it is complete without JavaScript or when the app is
+  unreachable; a guarded block at the end of `site.js` refreshes the cards from
+  `<app>/api/public/plans` (`data-zb-plans` on the grid, `data-plan`, `data-plan-price`, `-blurb`, `-bots`,
+  `-messages` on each card). It writes text only. If the defaults ever change for good, change them in the HTML too.
+- **One extra CTA label:** "Start free" (and "Log in"), both leading to the application. "Book a Consultation"
+  stays the label for everything ZEHNOX does by hand, including setting the product up for a client.
+- Styles live in the "PRODUCT PAGE KIT" block of `css/style.css` (`.pshot`, `.pshot--hero`, `.steps--3`, `.plan`).
+  Screenshots are real captures of the product with fictional demo data; re-capture them when the product's look changes.
+- A product is listed in `content.json` `work[]` with `"url": "/zehnbot"`. A `url` that starts with `/` is a page of
+  this site and opens in the same tab; any other `url` is external and opens in a new one.
+- The Solutions hub lists products in its own "Products" section, after the audiences.
