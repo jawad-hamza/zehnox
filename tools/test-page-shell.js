@@ -209,6 +209,31 @@ test("no source page hardcodes the tag — it comes from the build", () => {
   }
 });
 
+/* ---------- AdSense site verification ---------- */
+const ADSENSE = "ca-pub-3920913029248414";
+
+test("every built page carries exactly one AdSense verification meta, inside the head", () => {
+  const built = pages(DIST, []);
+  assert.ok(built.length > 20, "expected the built site, found " + built.length + " page(s)");
+  for (const file of built) {
+    const html = fs.readFileSync(file, "utf8");
+    const rel = path.relative(ROOT, file);
+    const tags = html.match(/<meta[^>]+name="google-adsense-account"[^>]*>/g) || [];
+    assert.strictEqual(tags.length, 1, rel + ": found " + tags.length + " AdSense metas, expected exactly 1");
+    assert.ok(tags[0].includes('content="' + ADSENSE + '"'), rel + ": wrong publisher id — " + tags[0]);
+    const at = html.indexOf(tags[0]);
+    assert.ok(html.search(/<meta[^>]+charset=/i) < at, rel + ": the meta is before <meta charset>, which must come first");
+    assert.ok(at < html.search(/<\/head>/i), rel + ": the meta is outside <head>");
+  }
+});
+
+test("no source page hardcodes the AdSense meta — it comes from the build", () => {
+  for (const file of pages(path.join(ROOT, "src"), [])) {
+    assert.ok(!fs.readFileSync(file, "utf8").includes("google-adsense-account"),
+      path.relative(ROOT, file) + ": hardcoded AdSense meta would double up with the injected one");
+  }
+});
+
 /* ---------- ZehnBot chat widget ---------- */
 const WIDGET = "https://bot.zehnox.com/static/widget.js?client_id=zehnox-db881c";
 const isDemo = (file) => path.relative(DIST, file).split(path.sep)[0] === "demo";

@@ -4,8 +4,8 @@
    - regenerates src/js/content.js AND dist/js/content.js from content.json (window.CONTENT)
    - expands src/_templates/post.html once per post into dist/insights/<slug>.html
    - publishes each Prototypes/<Name>/ demo verbatim to dist/demo/<name>/ (kept out of the sitemap)
-   - injects the Google Analytics tag into every html page, and the ZehnBot chat widget into
-     every public one (not /demo/), on their way into dist/
+   - injects the Google Analytics tag and the AdSense verification meta into every html page,
+     and the ZehnBot chat widget into every public one (not /demo/), on their way into dist/
    - writes dist/sitemap.xml (every html page, using site.url) and dist/robots.txt
    - idempotent: files in dist/ that this build did not produce are deleted
    Node built-ins only. Usage: node build.js   |   const { build } = require("./build"); build();
@@ -118,18 +118,37 @@ function analyticsTag(nl) {
   ].join(nl);
 }
 
-function withAnalytics(html, rel) {
-  if (!GA_MEASUREMENT_ID) return html;
-  if (html.indexOf("googletagmanager.com") !== -1) return html;   // already tagged; never double up
+/* Put a snippet as high in <head> as possible — but after <meta charset>, which has to stay
+   first, because a browser only looks for the encoding in the opening bytes of the document. */
+function insertInHead(html, rel, snippet, what) {
   const nl = html.indexOf("\r\n") !== -1 ? "\r\n" : "\n";
-  /* Google asks for the tag as high in <head> as possible, but <meta charset> has to stay
-     first — a browser only looks for the encoding in the opening bytes of the document. */
   const charset = /<meta[^>]+charset=[^>]*>/i.exec(html);
   const head = /<head[^>]*>/i.exec(html);
   const anchor = charset || head;
-  if (!anchor) throw new Error(rel + ": no <head> to put the analytics tag in");
+  if (!anchor) throw new Error(rel + ": no <head> to put the " + what + " in");
   const at = anchor.index + anchor[0].length;
-  return html.slice(0, at) + nl + analyticsTag(nl) + html.slice(at);
+  return html.slice(0, at) + nl + snippet(nl) + html.slice(at);
+}
+
+function withAnalytics(html, rel) {
+  if (!GA_MEASUREMENT_ID) return html;
+  if (html.indexOf("googletagmanager.com") !== -1) return html;   // already tagged; never double up
+  return insertInHead(html, rel, analyticsTag, "analytics tag");
+}
+
+/* ---------- AdSense site verification ----------
+   Google reads this from the <head> of the site's pages to confirm the domain belongs to
+   this AdSense account. Injected here for the same reason as the analytics tag: one place
+   to change it, and every page — including generated ones — carries it.
+   Set ADSENSE_ACCOUNT="" in the environment to build without it. */
+const ADSENSE_ACCOUNT = process.env.ADSENSE_ACCOUNT !== undefined
+  ? process.env.ADSENSE_ACCOUNT.trim()
+  : "ca-pub-3920913029248414";
+
+function withAdsense(html, rel) {
+  if (!ADSENSE_ACCOUNT) return html;
+  if (html.indexOf("google-adsense-account") !== -1) return html;
+  return insertInHead(html, rel, () => '<meta name="google-adsense-account" content="' + esc(ADSENSE_ACCOUNT) + '">', "AdSense meta tag");
 }
 
 /* ---------- ZehnBot chat widget ----------
@@ -154,7 +173,7 @@ function withChatWidget(html, rel) {
   return html.slice(0, end) + '<script src="' + esc(CHAT_WIDGET_SRC) + '" async></script>' + nl + html.slice(end);
 }
 
-const withSiteTags = (html, rel) => withChatWidget(withAnalytics(html, rel), rel);
+const withSiteTags = (html, rel) => withChatWidget(withAdsense(withAnalytics(html, rel), rel), rel);
 
 /* ---------- output tracking (so stale files can be removed) ---------- */
 function makeWriter(written) {
