@@ -77,10 +77,11 @@ the host, never in git, never in `.env`:
 
 ```sh
 umask 077
-openssl rand -hex 32 > /root/sbhm/k1.tmp
-install -o root -g zehnox-mail -m 0440 /root/sbhm/k1.tmp /etc/zehnox-mail/keys/k1.key
-install -o root -g root -m 0400 /root/sbhm/k1.tmp /srv/zehnox/secrets/mail-service.key
-shred -u /root/sbhm/k1.tmp
+T=$(mktemp -d)                                  # a private scratch dir, removed below
+openssl rand -hex 32 > "$T/k1.tmp"
+install -o root -g zehnox-mail -m 0440 "$T/k1.tmp" /etc/zehnox-mail/keys/k1.key
+install -o root -g root -m 0400 "$T/k1.tmp" /srv/zehnox/secrets/mail-service.key
+shred -u "$T/k1.tmp" && rmdir "$T"
 openssl rand -hex 32 > /srv/zehnox/secrets/mail-secrets.key && chmod 0400 /srv/zehnox/secrets/mail-secrets.key
 ```
 

@@ -55,12 +55,22 @@ Stop after any phase. Each one is useful on its own.
 Follow `mail-daemon/INSTALL.md` sections 1–5, with these zehnox values:
 
 - user and group `zehnox-mail`, state in `/var/lib/zehnox-mail`
-- socket `/run/zehnox-maild/zehnox-maild.sock`, units `mail-daemon/systemd/zehnox-maild.*`
-- Dovecot snippet: the **2.4** file
+- socket `/var/lib/zehnox-mail/sock/mail.sock` (the unit sets it; it is kept out of `/run`
+  so the container's bind mount cannot go stale), units `mail-daemon/systemd/zehnox-maild.*`
+- the container reaches the socket through the `zehnox-mail-client` group
 - restriction class `zehnox_sender` (the other domain already uses `strategic_sender`)
 
-Before starting it, run `node tools/mail-manifest.js --check` from the repo on the server:
-it proves the daemon's copy of the rules is byte-for-byte the one the website runs.
+After copying the code into place, run the manifest check — it needs the install directory,
+and prints only usage without it:
+
+```sh
+node tools/mail-manifest.js --check /usr/local/lib/zehnox-mail
+```
+
+It proves the daemon's copy of the rules is byte-for-byte the one the website runs.
+
+The Dovecot snippet is **not** part of this phase: it is only needed once mailboxes exist,
+in Phase B.
 
 Nothing about mail changes in this phase: the daemon writes its own files under
 `/var/lib/zehnox-mail`, which no Postfix setting points at yet.
@@ -72,37 +82,44 @@ sudo cp -a /etc/postfix/virtual /etc/postfix/virtual.bak-$(date +%F)
 sudo tar czf /root/postfix-dovecot-backup-$(date +%F).tgz /etc/postfix /etc/dovecot
 ```
 
-Create the two addresses in the admin panel (Email → Add an address), as **forwarding**,
-with the same destination they have now. Then compare:
+The admin panel cannot do this yet — it is not connected until Phase W. The daemon adopts
+the existing entries itself, and will show you what it would do first:
 
-```bash
+```sh
+sudo -u zehnox-mail zehnox-maild --import --postfix-map /etc/postfix/virtual --dry-run
+sudo -u zehnox-mail zehnox-maild --import --postfix-map /etc/postfix/virtual
+```
+
+Then compare what it rendered against what is live today:
+
+```sh
 sudo cat /var/lib/zehnox-mail/postfix/virtual   # what the daemon rendered
 sudo cat /etc/postfix/virtual                   # what is live today
 ```
 
 They must list the same addresses going to the same places. Only then:
 
-```bash
+```sh
 # append the daemon's map; the hand-written file stays first and still wins
 sudo postconf -e 'virtual_alias_maps = hash:/etc/postfix/virtual, hash:/var/lib/strategic-mail/postfix/virtual, hash:/var/lib/zehnox-mail/postfix/virtual'
 sudo systemctl reload postfix
 ```
-
 Verify with a real delivery to `info@zehnox.com` before going further.
 
 ### Phase W — the website uses the daemon
 
-In `/opt/zehnox/.env` (chmod 600), then `docker compose up -d`:
+Keys stay out of `.env`. They are written to files in Phase 1 and the site reads them by
+path, so a key is never an environment variable anyone can print:
 
 ```
 MAIL_PROVIDER=vps
-MAIL_SERVICE_SOCKET=/run/zehnox-maild/zehnox-maild.sock
-MAIL_SERVICE_KEY=<64 hex, from Phase 1>
-MAIL_SECRETS_KEY=<64 hex, from Phase 1>
+MAIL_SERVICE_SOCKET=/var/lib/zehnox-mail/sock/mail.sock
+MAIL_SERVICE_KEY_FILE=/srv/zehnox/secrets/mail-service.key
+MAIL_SECRETS_KEY_FILE=/srv/zehnox/secrets/mail-secrets.key
 MAIL_SMTP_HOST_ALLOWLIST=mail.zehnox.com
 ```
-
-The socket must be bind-mounted into the container in `/opt/zehnox/compose.yaml`. Until
+The socket directory and both key files must be bind-mounted into the container in
+`/opt/zehnox/compose.yaml`, the key files read-only. Until
 this phase the Email panel says "Email management is not available yet", which is correct.
 
 ### Phase B — mailboxes (the risky one)
