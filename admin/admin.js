@@ -10,7 +10,7 @@
   const DISCIPLINES = ["Leadership", "AI Automation", "Creative Studio", "Web & Digital", "Software Solutions", "Training"];
   const VERTICALS = ["AI Automation", "Creative Studio", "Web & Digital", "Software Solutions", "Training"];
   const SOCIAL_KEYS = ["instagram", "linkedin", "youtube", "facebook", "tiktok", "x"];
-  const PANELS = ["site", "social", "team", "work", "insights", "legal", "inquiries", "account"];
+  const PANELS = ["site", "social", "team", "work", "insights", "legal", "inquiries", "email", "account"];
   const MAX_UPLOAD = 5 * 1024 * 1024;        // what the server stores — reached only by SVGs now
   const MAX_SOURCE = 40 * 1024 * 1024;       // what we let the browser decode before cropping
 
@@ -91,8 +91,8 @@
   }
 
   /* ---------- API ---------- */
-  async function api(method, path, body) {
-    const headers = { Accept: "application/json", Authorization: "Bearer " + token };
+  async function api(method, path, body, extra) {
+    const headers = Object.assign({ Accept: "application/json", Authorization: "Bearer " + token }, extra || {});
     if (body !== undefined) headers["Content-Type"] = "application/json";
     let res;
     try {
@@ -756,6 +756,8 @@
     $$("[data-nav]").forEach((a) => { a.classList.toggle("is-active", a.dataset.nav === panel); if (a.dataset.nav === panel) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     if (location.hash !== "#" + panel) history.replaceState(null, "", "#" + panel);
     if (panel === "inquiries" && !inquiriesLoaded && content) loadInquiries(true);
+    /* The Email panel keeps its own state in admin/email.js and loads on first view. */
+    if (panel === "email" && window.ZXMail) window.ZXMail.show();
     const active = $('[data-nav="' + panel + '"]');
     if (active && active.scrollIntoView) active.scrollIntoView({ block: "nearest", inline: "center" });
   }
@@ -887,6 +889,11 @@
   document.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s" && content) { e.preventDefault(); save(); }
   });
+
+  /* The Email panel lives in admin/email.js and shares these helpers, so it uses the same
+     session, the same error handling and the same toasts. It gets nothing that could touch
+     the content document: mail settings are not part of content.json. */
+  window.ZXAdmin = { api, toast, esc, attr, $, $$ };
 
   if (token) load(); else showAuth();
 })();

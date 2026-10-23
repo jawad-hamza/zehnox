@@ -79,7 +79,8 @@
     <a href="#insights" data-nav="insights"><span class="mono">05</span>Insights</a>
     <a href="#legal" data-nav="legal"><span class="mono">06</span>Legal</a>
     <a href="#inquiries" data-nav="inquiries"><span class="mono">07</span>Inquiries</a>
-    <a href="#account" data-nav="account"><span class="mono">08</span>Account</a>
+    <a href="#email" data-nav="email"><span class="mono">08</span>Email</a>
+    <a href="#account" data-nav="account"><span class="mono">09</span>Account</a>
     <div class="side__foot"><span class="mono" id="whoami"></span> <a href="#" id="sideSignOut">Sign out</a></div>
   </nav>
 
@@ -185,7 +186,17 @@
       <div id="inquiries"></div>
     </section>
 
-    <!-- 08 Account -->
+    <!-- 08 Email -->
+    <section class="panel" data-panel="email" hidden>
+      <div class="panel__head"><span class="mono lime">08</span><h2>Email</h2><p>Addresses at zehnox.com, where their mail goes, and how the website sends enquiry emails. Changes reach the live mail server within a minute.</p></div>
+      <div data-mail="status"></div>
+      <div class="mail-bar"><h3>Addresses</h3><button class="btn btn--lime btn--sm" type="button" data-mail-act="add">Add an address</button></div>
+      <div data-mail="add"></div>
+      <div data-mail="rows"></div>
+      <div data-mail="smtp"></div>
+      <div data-mail="health"></div>
+    </section>
+    <!-- 09 Account -->
     <section class="panel" data-panel="account" hidden>
       <div class="panel__head"><span class="mono lime">08</span><h2>Account</h2><p>Change the username and password used to open this admin. Your current password is required for any change. Other signed-in devices are signed out when you save.</p></div>
       <form class="card" id="accountForm" novalidate autocomplete="off">
@@ -205,6 +216,7 @@
 </div>
 
 <script src="crop.js?v=1"></script>
-<script src="admin.js?v=4"></script>
+<script src="admin.js?v=5"></script>
+<script src="email.js?v=1"></script>
 </body>
 </html>

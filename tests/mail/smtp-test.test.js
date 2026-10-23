@@ -76,7 +76,7 @@ describe("SMTP test against fake servers", () => {
     assert.equal(log.mails.length, 1);
     assert.equal(log.mails[0].from, "<contact@zehnox.com>");
     assert.deepEqual(log.mails[0].rcpt, ["<" + INQUIRY + ">"]);
-    assert.match(log.mails[0].data, /Subject: ZEHNOX BHM website email test/);
+    assert.match(log.mails[0].data, /Subject: ZEHNOX website email test/);
     assertSafe(r, pass);
   });
 
