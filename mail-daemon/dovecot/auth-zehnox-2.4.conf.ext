@@ -1,0 +1,29 @@
+# zehnox.com mailboxes for Dovecot 2.4 (docs/mail/DESIGN.md section 16, Phase B).
+# TEMPLATE. Install as /etc/dovecot/conf.d/auth-zehnox.conf.ext and include it from
+# 10-auth.conf AFTER the existing auth include, so every existing (strategicbhm) lookup runs
+# first and is unchanged:
+#
+#   !include auth-system.conf.ext          # or whatever is there today: leave it alone
+#   !include auth-zehnox.conf.ext    # add this line below it
+#
+# Dovecot 2.4 replaced the 2.3 "args = ..." strings with named settings and requires a
+# name on each passdb/userdb block. The setting names below follow the 2.4 passwd-file
+# driver; check them against `doveconf -n` and the 2.4 documentation on the host before
+# reloading, because a config that does not parse stops every login on the server.
+#
+# The file is rendered by zehnox-maild and holds only @zehnox.com users, with
+# full-address user names (the 2.4 default username format keeps the domain; confirm that
+# nothing in the existing config strips it, see section 16 Phase B). Dovecot re-reads the
+# file when its mtime changes, so no reload is needed after a change in the admin panel.
+# Verify after install: `doveconf -n` parses, and `doveadm auth test <existing strategicbhm user>`
+# still passes.
+
+passdb zehnox {
+  driver = passwd-file
+  passwd_file_path = /var/lib/zehnox-mail/dovecot/passwd
+}
+
+userdb zehnox {
+  driver = passwd-file
+  passwd_file_path = /var/lib/zehnox-mail/dovecot/passwd
+}

@@ -1,0 +1,22 @@
+{
+  "domain": "zehnox.com",
+  "hostname": "mail.example.net",
+  "mapType": "hash",
+  "postmapPath": "/usr/sbin/postmap",
+  "stateDir": "/var/lib/zehnox-mail",
+  "bootstrapForward": "owner@example.com",
+  "mailboxes": {
+    "enabled": false,
+    "uid": 5000,
+    "gid": 5000,
+    "homeBase": "/var/vmail/zehnox.com",
+    "schemes": ["SHA512-CRYPT"],
+    "minRounds": 50000,
+    "gate": { "senderLoginEnforced": false, "outboundRateLimited": false }
+  },
+  "dkim": { "selector": "sbhm1", "publicFile": "/etc/zehnox-mail/dkim-public.txt" },
+  "probes": { "smtp": 25, "submission": 587, "imap": 993 },
+  "keys": { "k1": "/etc/zehnox-mail/keys/k1.key" },
+  "limits": { "mutationsPerMinute": 60, "passwordChangesPerHour": 20, "forwardingChangesPerHour": 20 },
+  "forwardDenyDomains": []
+}

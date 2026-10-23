@@ -1,4 +1,7 @@
 "use strict";
+/* Generated per run: a password literal in source trips the secret scanner in
+   tests/mail/repo-hygiene.test.js, and the fake relay accepts whatever it is given. */
+const FAKE_PASS = require("crypto").randomBytes(9).toString("base64url");
 /* Tests for replying to an enquiry, read/unread and CSV export.
    Run: node tools/test-reply.js
 
@@ -67,7 +70,7 @@ const ready = async (base) => {
   const PORT = 3116, base = "http://127.0.0.1:" + PORT;
   const server = startServer(PORT, {
     SMTP_HOST: "127.0.0.1", SMTP_PORT: String(relay.port),
-    SMTP_USER: "info@zehnox.com", SMTP_PASS: "s3cret",
+    SMTP_USER: "info@zehnox.com", SMTP_PASS: FAKE_PASS,
     SMTP_FROM: "info@zehnox.com", SMTP_INSECURE_TLS: "1",
   });
   const BARE_PORT = 3117, bareBase = "http://127.0.0.1:" + BARE_PORT;

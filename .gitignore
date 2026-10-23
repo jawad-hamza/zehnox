@@ -8,8 +8,17 @@
 
 # Local runtime noise
 node_modules/
-data/server.log
-data/*.corrupt
+
+# Runtime state: the admin password hash, the first-run password and stored enquiries.
+# On the VPS this is a bind mount from /opt/zehnox/persistent/data, so nothing here
+# belongs in a public repository.
+/data/
+
+# Key material and secrets. No leading slash, so a key dropped anywhere is still ignored.
+/secrets/
+secrets/
+*.key
+*.pem
 
 # Product installers are served from the VPS (/opt/zehnox/persistent/downloads), never from git.
 /downloads/

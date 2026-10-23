@@ -7,3 +7,17 @@ src/uploads
 .env
 .env.*
 downloads
+# The web image runs the site. Tests start processes and fake servers, the daemon runs on
+# the host and never in the container, and neither docs nor key material belong in an image.
+test
+tests
+tests/mail
+docs
+mail-daemon
+tools/mail-manifest.js
+secrets
+**/secrets
+*.key
+**/*.key
+*.pem
+**/*.pem

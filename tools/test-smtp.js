@@ -1,4 +1,7 @@
 "use strict";
+/* Generated per run: a password literal in source trips the secret scanner in
+   tests/mail/repo-hygiene.test.js, and the fake relay accepts whatever it is given. */
+const FAKE_PASS = require("crypto").randomBytes(9).toString("base64url");
 /* Tests for the SMTP client — run: node tools/test-smtp.js
    Add --live to also send one real message through the configured relay:
      SMTP_USER=info@zehnox.com SMTP_PASS=... node tools/test-smtp.js --live you@example.com
@@ -24,7 +27,7 @@ async function test(name, fn) {
 
 const baseSend = (port, extra) => Object.assign({
   host: "127.0.0.1", port, clientName: "test.local",
-  user: "info@zehnox.com", pass: "s3cret",
+  user: "info@zehnox.com", pass: FAKE_PASS,
   from: "info@zehnox.com", to: ["info@zehnox.com"],
   subject: "Hello", text: "Body line",
   rejectUnauthorized: false, timeoutMs: 8000,
@@ -115,7 +118,7 @@ const baseSend = (port, extra) => Object.assign({
         }));
         assert.ok(srv.seen.secured, "server never saw a TLS upgrade");
         assert.strictEqual(srv.seen.authUser, "info@zehnox.com");
-        assert.strictEqual(srv.seen.authPass, "s3cret");
+        assert.strictEqual(srv.seen.authPass, FAKE_PASS);
         assert.strictEqual(srv.seen.mailFrom, "info@zehnox.com");
         assert.deepStrictEqual(srv.seen.rcptTo, ["info@zehnox.com"]);
         const [head, body] = srv.seen.data.split("\n\n");
@@ -129,7 +132,7 @@ const baseSend = (port, extra) => Object.assign({
       try {
         await smtp.sendMail(baseSend(srv.port));
         assert.strictEqual(srv.seen.authUser, "info@zehnox.com");
-        assert.strictEqual(srv.seen.authPass, "s3cret");
+        assert.strictEqual(srv.seen.authPass, FAKE_PASS);
       } finally { srv.close(); }
     });
 

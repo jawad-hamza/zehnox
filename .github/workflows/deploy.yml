@@ -6,12 +6,32 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to a commit: a tag can be moved under us, and the job below hands an
+      # action the SSH key to the production server.
+      - name: Check out the repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Use Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: Build the site
+        run: node build.js
+      - name: Site suites
+        run: |
+          for t in tools/test-*.js; do echo "== $t"; node "$t"; done
+      - name: Mail module suite
+        run: node --test "tests/**/*.test.js"
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@7eaf76671a0d7eec5d98ee897acda4f968735a17 # v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -65,7 +85,7 @@ jobs:
 
             echo "Deployment failed."
             echo "Recent container logs:"
-            docker logs --tail 100 zehnox || true
+            docker logs --tail 100 zehnox 2>&1 | sed -E 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/<ip>/g; s/[0-9a-fA-F:]{2,}:[0-9a-fA-F:]+/<ip6>/g; s/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g' || true
 
             if ! docker image inspect zehnox-rollback:previous >/dev/null 2>&1; then
               echo "No rollback image is available."
@@ -104,7 +124,7 @@ jobs:
               echo "Rollback succeeded. Previous version is running."
             else
               echo "Rollback failed to become healthy."
-              docker logs --tail 100 zehnox || true
+              docker logs --tail 100 zehnox 2>&1 | sed -E 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/<ip>/g; s/[0-9a-fA-F:]{2,}:[0-9a-fA-F:]+/<ip6>/g; s/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/<email>/g' || true
             fi
 
             exit 1

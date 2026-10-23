@@ -1,0 +1,23 @@
+# zehnox-maild socket (docs/mail/DESIGN.md section 5.1). TEMPLATE: installed by the
+# owner at /etc/systemd/system/zehnox-maild.socket, see mail-daemon/INSTALL.md.
+#
+# The socket lives in a persistent directory, not on the /run tmpfs: systemd owns the
+# inode, so it survives daemon crashes and restarts, and the container's bind mount of
+# /var/lib/zehnox-mail/sock never goes stale. The directory is pre-created at install
+# (zehnox-mail:zehnox-mail-client 0750), so Docker never creates a root placeholder.
+# There is no TCP listener anywhere (D1).
+
+[Unit]
+Description=zehnox-maild control socket (zehnox.com mail management)
+Documentation=file:///usr/local/lib/zehnox-mail/INSTALL.md
+
+[Socket]
+ListenStream=/var/lib/zehnox-mail/sock/mail.sock
+SocketUser=zehnox-mail
+SocketGroup=zehnox-mail-client
+SocketMode=0660
+Accept=no
+RemoveOnStop=no
+
+[Install]
+WantedBy=sockets.target

@@ -1,4 +1,7 @@
 "use strict";
+/* Generated per run: a password literal in source trips the secret scanner in
+   tests/mail/repo-hygiene.test.js, and the fake relay accepts whatever it is given. */
+const FAKE_PASS = require("crypto").randomBytes(9).toString("base64url");
 /* End-to-end: a real POST /api/contact against a real server process must both store the
    inquiry and email it through the relay. Run: node tools/test-contact-email.js
 
@@ -44,7 +47,7 @@ const waitFor = async (predicate, ms, what) => {
       SMTP_HOST: "127.0.0.1",
       SMTP_PORT: String(relay.port),
       SMTP_USER: "info@zehnox.com",
-      SMTP_PASS: "s3cret",
+      SMTP_PASS: FAKE_PASS,
       SMTP_FROM: "info@zehnox.com",
       SMTP_INSECURE_TLS: "1",   // the fake relay uses a self-signed certificate
     }),

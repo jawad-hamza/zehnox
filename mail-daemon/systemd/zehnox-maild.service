@@ -1,0 +1,57 @@
+# zehnox-maild service (docs/mail/DESIGN.md section 5.1). TEMPLATE: installed by the
+# owner at /etc/systemd/system/zehnox-maild.service, see mail-daemon/INSTALL.md.
+#
+# Started by zehnox-maild.socket (fd 3). Runs unprivileged: the only thing it writes is
+# /var/lib/zehnox-mail, and its only subprocess is /usr/sbin/postmap on its own maps.
+# It never reloads Postfix, Dovecot or OpenDKIM.
+#
+# MemoryDenyWriteExecute is deliberately NOT set: V8's JIT needs writable and executable
+# memory. IPAddressAllow=localhost exists only for the status probes on 127.0.0.1.
+# Adjust ExecStart if node is not /usr/bin/node on the host (`command -v node`).
+
+[Unit]
+Description=zehnox-maild (zehnox.com mail management)
+Documentation=file:///usr/local/lib/zehnox-mail/INSTALL.md
+Requires=zehnox-maild.socket
+After=zehnox-maild.socket network.target
+
+[Service]
+Type=simple
+User=zehnox-mail
+Group=zehnox-mail
+ExecStart=/usr/bin/node /usr/local/lib/zehnox-mail/zehnox-maild.js --config /etc/zehnox-mail/config.json
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ReadWritePaths=/var/lib/zehnox-mail
+ReadOnlyPaths=/etc/zehnox-mail
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+UMask=0027
+MemoryMax=128M
+# Node uses about 10 threads (main, libuv pool, V8 workers) plus one postmap child. If the
+# journal shows thread creation failures (EAGAIN) on a many-core host, raise this a little.
+TasksMax=16
+LimitNOFILE=128
+Restart=on-failure
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+Also=zehnox-maild.socket
