@@ -19,6 +19,11 @@ const crypto = require("crypto");
 const { build } = require("./build.js");
 const { writeFileAtomic } = require("./write-file.js");
 const { sendMail, isEmail } = require("./smtp.js");
+/* Email management: /api/mail/* is served by lib/mail/routes.js, behind the same admin
+   session as every other route below the gate in handleApi. It brings its own JSON-only
+   bodies, body limit, per-route methods, idempotency keys and audit log. */
+const mail = require("./lib/mail");
+const { handleMail } = require("./lib/mail/routes.js");
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, "dist");
@@ -125,7 +130,9 @@ function sessionFrom(req) {
   if (!sess) return null;
   if (sess.expires < Date.now()) { sessions.delete(id); return null; }
   sess.expires = Date.now() + SESSION_TTL_MS;
-  return { id, username: sess.username };
+  /* `via` tells a cookie session from a Bearer one. The mail audit records it, so a change
+     can be traced back to how the admin was signed in. */
+  return { id, username: sess.username, via: m ? "bearer" : "cookie" };
 }
 function sessionCookie(req, id) {
   const secure = TRUST_PROXY && String(req.headers["x-forwarded-proto"] || "").split(",")[0].trim() === "https";
@@ -211,6 +218,29 @@ async function readJson(req, limit) {
 }
 
 const authorized = (req) => !!sessionFrom(req);
+
+/* ---------- rate limits for /api/mail/* (in memory; they only need to survive minutes) ----------
+   Keyed "<user>|<ip>" by lib/mail/routes.js, except smtpTestGlobal, whose key is "global":
+   a test send puts real mail on the wire, so it is capped per admin and server-wide. */
+function limiter(windowMs, max) {
+  const hits = new Map();
+  setInterval(() => {
+    const now = Date.now();
+    for (const [k, arr] of hits) { const keep = arr.filter((t) => now - t < windowMs); if (keep.length) hits.set(k, keep); else hits.delete(k); }
+  }, windowMs).unref();
+  return {
+    blocked(k) { const now = Date.now(); const arr = (hits.get(k) || []).filter((t) => now - t < windowMs); hits.set(k, arr); return arr.length >= max; },
+    hit(k) { const arr = hits.get(k) || []; arr.push(Date.now()); hits.set(k, arr); },
+    clear(k) { hits.delete(k); },
+  };
+}
+const mailLimits = {
+  mailWrite: limiter(60e3, 30),
+  mailSecret: limiter(15 * 60e3, 10),
+  smtpTest: limiter(10 * 60e3, 3),
+  smtpTestGlobal: limiter(60 * 60e3, 10),
+  healthRefresh: limiter(60e3, 6),
+};
 
 /* failed sign-in attempts per IP: only failures count, a successful sign-in clears the counter */
 const loginHits = new Map();
@@ -614,7 +644,14 @@ async function handleApi(req, res, url) {
 
   if (p === "/api/me") {
     if (method !== "GET") return fail(res, 405, "Method not allowed");
-    return sendJson(res, 200, { ok: true, username: session.username });
+    const m = mail.me();
+    return sendJson(res, 200, { ok: true, username: session.username,
+      mail: { provider: m.provider, connected: m.connected === true, mock: m.mock === true } });
+  }
+
+  /* Email management. Reached only past the gate above, so it inherits the admin login. */
+  if (p === "/api/mail" || p.startsWith("/api/mail/")) {
+    return handleMail(req, res, url, session, { readJson, sendJson, fail, clientIp, log, logErr, limits: mailLimits, inquiryRecipient });
   }
 
   if (p === "/api/account") {
